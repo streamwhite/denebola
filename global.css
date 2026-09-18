@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-background: 247 247 242;
+    --color-foreground: 23 32 24;
+    --color-card: 255 255 255;
+    --color-primary: 23 107 82;
+    --color-muted: 104 115 108;
+    --color-border: 217 223 216;
+    --color-destructive: 180 35 24;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background: 16 21 18;
+      --color-foreground: 239 247 239;
+      --color-card: 26 36 29;
+      --color-primary: 128 216 174;
+      --color-muted: 166 180 170;
+      --color-border: 53 66 57;
+      --color-destructive: 255 137 125;
+    }
+  }
+}

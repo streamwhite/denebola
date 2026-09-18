@@ -1,0 +1,2 @@
+export type Logger = { debug: (message: string, context?: Record<string, unknown>) => void; info: (message: string, context?: Record<string, unknown>) => void; error: (message: string, context?: Record<string, unknown>) => void };
+export const logger: Logger = { debug: (message, context) => console.debug(message, context), info: (message, context) => console.info(message, context), error: (message, context) => console.error(message, context) };

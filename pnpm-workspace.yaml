@@ -1,0 +1,11 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+allowBuilds:
+  "@biomejs/biome": true
+  dtrace-provider: true
+  esbuild: true
+  protobufjs: true
+peerDependencyRules:
+  allowedVersions:
+    "expo-modules-core>react-native-worklets": "0.12.x"
