@@ -112,12 +112,33 @@ importers:
       '@expo/vector-icons':
         specifier: ^15.1.1
         version: 15.1.1(expo-font@57.0.4)(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.4)(supports-color@8.1.1))(@react-native/metro-config@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.2.4)(supports-color@8.1.1))(react@19.2.4)
+      '@formatjs/intl-datetimeformat':
+        specifier: ^7.7.1
+        version: 7.7.1
+      '@formatjs/intl-getcanonicallocales':
+        specifier: ^3.2.12
+        version: 3.2.12
+      '@formatjs/intl-locale':
+        specifier: ^5.3.11
+        version: 5.3.11
+      '@formatjs/intl-numberformat':
+        specifier: ^9.4.3
+        version: 9.4.3
+      '@formatjs/intl-pluralrules':
+        specifier: ^6.3.15
+        version: 6.3.15
+      '@formatjs/intl-relativetimeformat':
+        specifier: ^12.3.15
+        version: 12.3.15
       '@hookform/resolvers':
         specifier: ^5.9.1
         version: 5.9.1(@sinclair/typebox@0.34.52)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(joi@17.13.8)(react-hook-form@7.88.0(react@19.2.4))(zod@4.6.5)
       '@tanstack/react-query':
         specifier: ^5.103.1
         version: 5.103.1(react@19.2.4)
+      '@your-scope/mobile-template':
+        specifier: workspace:*
+        version: link:packages/mobile-template
       expo:
         specifier: ~57.0.23
         version: 57.0.23(7dc703b3caaecfe6563a2cb1024e3d6d)
@@ -234,58 +255,101 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(@types/node@26.6.1)(@vitest/coverage-v8@5.0.1)(jsdom@20.0.3(supports-color@8.1.1))(vite@7.3.6(@types/node@26.6.1)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(yaml@2.9.1))
 
-  packages/create-expo-app: {}
+  packages/create-mobile-app: {}
 
-  packages/mobile-analytics: {}
-
-  packages/mobile-api:
+  packages/mobile-template:
     dependencies:
-      '@your-scope/mobile-core':
-        specifier: workspace:*
-        version: link:../mobile-core
-
-  packages/mobile-auth:
-    dependencies:
-      expo-secure-store:
-        specifier: ~57.0.4
-        version: 57.0.4(expo@57.0.23)
-
-  packages/mobile-biometric: {}
-
-  packages/mobile-camera: {}
-
-  packages/mobile-core:
-    dependencies:
-      react:
-        specifier: ^19.2.3
-        version: 19.2.4
-      react-native:
-        specifier: 0.86.3
-        version: 0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.4)(supports-color@8.1.1))(@react-native/metro-config@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.2.4)(supports-color@8.1.1)
-
-  packages/mobile-deeplink: {}
-
-  packages/mobile-device:
-    dependencies:
+      '@formatjs/intl-datetimeformat':
+        specifier: ^7.7.1
+        version: 7.7.1
+      '@formatjs/intl-getcanonicallocales':
+        specifier: ^3.2.12
+        version: 3.2.12
+      '@formatjs/intl-locale':
+        specifier: ^5.3.11
+        version: 5.3.11
+      '@formatjs/intl-numberformat':
+        specifier: ^9.4.3
+        version: 9.4.3
+      '@formatjs/intl-pluralrules':
+        specifier: ^6.3.15
+        version: 6.3.15
+      '@formatjs/intl-relativetimeformat':
+        specifier: ^12.3.15
+        version: 12.3.15
+      '@react-native-community/netinfo':
+        specifier: 12.0.1
+        version: 12.0.1(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.4)(supports-color@8.1.1))(@react-native/metro-config@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.2.4)(supports-color@8.1.1))(react@19.2.4)
+      '@react-native-community/slider':
+        specifier: 5.2.0
+        version: 5.2.0
+      '@tanstack/react-query':
+        specifier: ^5.103.1
+        version: 5.103.1(react@19.2.4)
+      consola:
+        specifier: ^3.4.2
+        version: 3.4.2
+      expo:
+        specifier: ~57.0.23
+        version: 57.0.23(7dc703b3caaecfe6563a2cb1024e3d6d)
       expo-constants:
         specifier: ~57.0.18
         version: 57.0.18(expo@57.0.23)(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.4)(supports-color@8.1.1))(@react-native/metro-config@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.2.4)(supports-color@8.1.1))(supports-color@8.1.1)
-
-  packages/mobile-files: {}
-
-  packages/mobile-logging: {}
-
-  packages/mobile-notifications: {}
-
-  packages/mobile-permissions: {}
-
-  packages/mobile-sqlite: {}
-
-  packages/mobile-storage:
-    dependencies:
+      expo-linking:
+        specifier: ~57.0.10
+        version: 57.0.10(expo@57.0.23)(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.4)(supports-color@8.1.1))(@react-native/metro-config@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.2.4)(supports-color@8.1.1))(react@19.2.4)(supports-color@8.1.1)
+      expo-local-authentication:
+        specifier: ~57.0.3
+        version: 57.0.3(expo@57.0.23)
+      expo-localization:
+        specifier: ~57.0.2
+        version: 57.0.2(expo@57.0.23)(react@19.2.4)
+      expo-router:
+        specifier: ~57.0.21
+        version: 57.0.21(dea6e222a5716809f3ef987422d6efdf)
       expo-secure-store:
         specifier: ~57.0.4
         version: 57.0.4(expo@57.0.23)
+      expo-splash-screen:
+        specifier: ~57.0.9
+        version: 57.0.9(expo@57.0.23)(supports-color@8.1.1)(typescript@5.9.3)
+      expo-status-bar:
+        specifier: ~57.0.1
+        version: 57.0.1(expo@57.0.23)(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.4)(supports-color@8.1.1))(@react-native/metro-config@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.2.4)(supports-color@8.1.1))(react@19.2.4)
+      react:
+        specifier: ~19.2.0
+        version: 19.2.4
+      react-intl:
+        specifier: ^7.1.14
+        version: 7.1.14(react@19.2.4)(typescript@5.9.3)
+      react-native:
+        specifier: ~0.86.0
+        version: 0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.4)(supports-color@8.1.1))(@react-native/metro-config@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.2.4)(supports-color@8.1.1)
+      react-native-safe-area-context:
+        specifier: ~5.10.0
+        version: 5.10.0(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.4)(supports-color@8.1.1))(@react-native/metro-config@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.2.4)(supports-color@8.1.1))(react@19.2.4)
+      zustand:
+        specifier: ^5.0.15
+        version: 5.0.15(@types/react@19.3.0)(react@19.2.4)
+    devDependencies:
+      '@formatjs/cli':
+        specifier: ^6.16.30
+        version: 6.16.30
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      nativewind:
+        specifier: 4.2.7
+        version: 4.2.7(fe67de18173bc25641de4fbdabd71589)
+      react-native-css-interop:
+        specifier: 0.2.7
+        version: 0.2.7(fe67de18173bc25641de4fbdabd71589)
+      tailwindcss:
+        specifier: ^3.4.19
+        version: 3.4.19(yaml@2.9.1)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
 packages:
 
@@ -1302,6 +1366,9 @@ packages:
     resolution: {integrity: sha512-J3eL4n4h5QTwfD0SIz8OIk6/+sOL/hFZAMacgCM07UNlxBQfJipEpIC2AQxvGkbYeStByJ0TVhQAJo+DeNgaSQ==}
     hasBin: true
 
+  '@formatjs/bigdecimal@0.2.7':
+    resolution: {integrity: sha512-B4+XY/e4u5v261r3a37Kq2ax91gPZSKGyVpx8X5dygAggLlUz+6MeBpmAhaBFGB8WQ4JB1qD+QtKHk9aJkEb9Q==}
+
   '@formatjs/cli-native-darwin-arm64@1.1.24':
     resolution: {integrity: sha512-2i/fKUcawvTe022vN1LcpCJMBHcN2pFgOzg3Hr24jV0QMpoZVpB5RuM8fhZCy9E/STnOTP+P5W9uuPhg5eCGUA==}
     cpu: [arm64]
@@ -1370,14 +1437,41 @@ packages:
   '@formatjs/fast-memoize@2.2.7':
     resolution: {integrity: sha512-Yabmi9nSvyOMrlSeGGWDiH7rf3a7sIwplbvo/dlz9WCIjzIQAfy1RMf4S0X3yG724n5Ghu2GmEl5NJIV6O9sZQ==}
 
+  '@formatjs/fast-memoize@3.1.7':
+    resolution: {integrity: sha512-zXfhLpvA6T7+efdt9JLbBwZ00tT7NsBMDVnDu8rpHeNNv8KfRZAMo2gkG0k9lK/Nzc//3kJ9pImsfuJxk3KhUA==}
+
   '@formatjs/icu-messageformat-parser@2.11.4':
     resolution: {integrity: sha512-7kR78cRrPNB4fjGFZg3Rmj5aah8rQj9KPzuLsmcSn4ipLXQvC04keycTI1F7kJYDwIXtT2+7IDEto842CfZBtw==}
 
   '@formatjs/icu-skeleton-parser@1.8.16':
     resolution: {integrity: sha512-H13E9Xl+PxBd8D5/6TVUluSpxGNvFSlN/b3coUp0e0JpuWXXnQDiavIpY3NnvSp4xhEMoXyyBvVfdFX8jglOHQ==}
 
+  '@formatjs/intl-datetimeformat@7.7.1':
+    resolution: {integrity: sha512-DPTojo7VCGs8QDkogdZjxl5o4agsM0uVkoRHbRZZQAGj3/MevNVp1i2FezzY5/8M+c49NLo4ENtUjkOBlTAk8A==}
+
+  '@formatjs/intl-getcanonicallocales@3.2.12':
+    resolution: {integrity: sha512-THqQLTJUH2z2A7oE1guW8VzpGpsGFxwWZ+l8cI8Bk75xUU8DxtJoLfKl+5a6fYK26GeDWDWE0UbDhE5SwcLoFg==}
+
+  '@formatjs/intl-locale@5.3.11':
+    resolution: {integrity: sha512-tbFfmUkq48dnnyHLuWd8WJmpc2F8y9yI17EIZ/sce5kO+nZCXk94adql9Oucu7bG24KxKw/ukvPjkPZQ7pXq5w==}
+
   '@formatjs/intl-localematcher@0.6.2':
     resolution: {integrity: sha512-XOMO2Hupl0wdd172Y06h6kLpBz6Dv+J4okPLl4LPtzbr8f66WbIoy4ev98EBuZ6ZK4h5ydTN6XneT4QVpD7cdA==}
+
+  '@formatjs/intl-localematcher@0.9.0':
+    resolution: {integrity: sha512-Z7TD3ssNry1Av1dVDoq/mzpxGyxqWwU0ClWEo+BB3k0JQTeQvUGmeK9WZGYvlqStS0UqkaKXk3dfjsb6NaHAxw==}
+
+  '@formatjs/intl-numberformat@9.4.3':
+    resolution: {integrity: sha512-absVu2I7FlWl+Buictw2PL8Fl385uab3bEA3TCCTu+0DBHHFE+RTbmPmj0nUVO82U1b2Qw3/OA2I7KKLI48EpQ==}
+
+  '@formatjs/intl-pluralrules@6.3.15':
+    resolution: {integrity: sha512-/K6Up6SrvLcTP5mWVHp58A9Uk7I4jYbDYqtYdgKDeSY1HG0bhBMS4eVtqK2nFx8mWWdcHbt9ZqHBcCto573PNg==}
+
+  '@formatjs/intl-relativetimeformat@12.3.15':
+    resolution: {integrity: sha512-AUn+GJmU4z0098f4K8VYTxrOl0hfoTzXVeO0MmunJbn9fP5u0hSK2i8LntLQnediQ1oJDL8pyqZMWCBBSAhPDA==}
+
+  '@formatjs/intl-supportedvaluesof@2.3.10':
+    resolution: {integrity: sha512-1BRcSgZOH5hNNz/w2lwRi5o2OFbMr9xdREQSBzAkd9pwFjVCcncgWwvFqIsXlUEFNYENNKYzGybcZXAOl5ggvg==}
 
   '@formatjs/intl@3.1.8':
     resolution: {integrity: sha512-LWXgwI5zTMatvR8w8kCNh/priDTOF/ZssokMBHJ7ZWXFoYLVOYo0EJERD9Eajv+xsfQO1QkuAt77KWQ1OI4mOQ==}
@@ -1880,6 +1974,15 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  '@react-native-community/netinfo@12.0.1':
+    resolution: {integrity: sha512-P/3caXIvfYSJG8AWJVefukg+ZGRPs+M4Lp3pNJtgcTYoJxCjWrKQGNnCkj/Cz//zWa/avGed0i/wzm0T8vV2IQ==}
+    peerDependencies:
+      react: '*'
+      react-native: '>=0.59'
+
+  '@react-native-community/slider@5.2.0':
+    resolution: {integrity: sha512-484sH8aWEaSjxaZ7HT3YZ8CKDcNes2synko1vdEz5DFEdvKAduxKJTj22L/qBMD7rtIkfbX69DMzWDAGbOAV6w==}
 
   '@react-native-masked-view/masked-view@0.3.2':
     resolution: {integrity: sha512-XwuQoW7/GEgWRMovOQtX3A4PrXhyaZm0lVUiY8qJDvdngjLms9Cpdck6SmGAUNqQwcj2EadHC1HwL0bEyoa/SQ==}
@@ -2835,6 +2938,10 @@ packages:
     resolution: {integrity: sha512-ZqRXc+tZukToSNmh5C2iWMSoV3X1YUcPbqEM4DkEG5tNQXrQUZCNVGGv3IuicnkMtPfGf3Xtp8WCXs295iQ1pQ==}
     engines: {node: '>= 0.10.0'}
 
+  consola@3.4.2:
+    resolution: {integrity: sha512-5IKcdX0nnYavi6G7TtOhwkYzyjfJlatbjMjuLSfE2kYT5pMDOilZ4OvMhi637CcDICTmz3wARPoyhqyX1Y+XvA==}
+    engines: {node: ^14.18.0 || >=16.10.0}
+
   content-type@1.0.5:
     resolution: {integrity: sha512-nTjqfcBFEipKdXCv4YDQWCfmcLZKm81ldF0pAopTvyrFGVbcR6P/VAAd5G7N+0tTr8QqiU0tFadD6FK4NtJwOA==}
     engines: {node: '>= 0.6'}
@@ -3273,6 +3380,17 @@ packages:
     peerDependencies:
       react: '*'
       react-native: '*'
+
+  expo-local-authentication@57.0.3:
+    resolution: {integrity: sha512-1oQCBKz8JOpai+Zp+Z2RkBFIi2CHHWLSJk/pjvT9VEyf8nPFslo4kt1ZlQvtJ4rupbKNCmxqKfYr8Mlo8nJEug==}
+    peerDependencies:
+      expo: '*'
+
+  expo-localization@57.0.2:
+    resolution: {integrity: sha512-sIKYH3Ivddoge568WY6j+Kp2MAAZzWWqEnY2bokLkJFwX366tGL1mEnoY2WUi/qHatFFPop2yqDdurzbhnnimQ==}
+    peerDependencies:
+      expo: '*'
+      react: '*'
 
   expo-manifests@57.0.2:
     resolution: {integrity: sha512-pPIIcKR73OShwlWMg8H90WRzKUd2krDdKlKAwuQV1FtUwE7H3hQEFw0ePFQY9yFoGMF/77ryYwNKfI5umMcCog==}
@@ -5207,6 +5325,9 @@ packages:
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
+  rtl-detect@1.1.2:
+    resolution: {integrity: sha512-PGMBq03+TTG/p/cRB7HCLKJ1MgDIi07+QU1faSjiYRfmY5UsAttV9Hs08jDAHVwcOwmVLcSJkpwyfXszVjWfIQ==}
+
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
@@ -6023,6 +6144,24 @@ packages:
 
   zod@4.6.5:
     resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
+
+  zustand@5.0.15:
+    resolution: {integrity: sha512-MpSEjRiBkA9crSYeOUH32rJC7SVqAbm0Fqcqge/bUi2PPoLcBWKOsG+C8mevmpr8TwXHBVkChbbJiyvkE+i/3A==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
 
 snapshots:
 
@@ -7389,6 +7528,8 @@ snapshots:
       chalk: 4.1.2
       js-yaml: 4.3.2
 
+  '@formatjs/bigdecimal@0.2.7': {}
+
   '@formatjs/cli-native-darwin-arm64@1.1.24':
     optional: true
 
@@ -7427,6 +7568,8 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
+  '@formatjs/fast-memoize@3.1.7': {}
+
   '@formatjs/icu-messageformat-parser@2.11.4':
     dependencies:
       '@formatjs/ecma402-abstract': 2.3.6
@@ -7438,9 +7581,43 @@ snapshots:
       '@formatjs/ecma402-abstract': 2.3.6
       tslib: 2.8.1
 
+  '@formatjs/intl-datetimeformat@7.7.1':
+    dependencies:
+      '@formatjs/bigdecimal': 0.2.7
+      '@formatjs/intl-localematcher': 0.9.0
+
+  '@formatjs/intl-getcanonicallocales@3.2.12': {}
+
+  '@formatjs/intl-locale@5.3.11':
+    dependencies:
+      '@formatjs/intl-getcanonicallocales': 3.2.12
+      '@formatjs/intl-supportedvaluesof': 2.3.10
+
   '@formatjs/intl-localematcher@0.6.2':
     dependencies:
       tslib: 2.8.1
+
+  '@formatjs/intl-localematcher@0.9.0':
+    dependencies:
+      '@formatjs/fast-memoize': 3.1.7
+
+  '@formatjs/intl-numberformat@9.4.3':
+    dependencies:
+      '@formatjs/bigdecimal': 0.2.7
+      '@formatjs/intl-localematcher': 0.9.0
+
+  '@formatjs/intl-pluralrules@6.3.15':
+    dependencies:
+      '@formatjs/bigdecimal': 0.2.7
+      '@formatjs/intl-localematcher': 0.9.0
+
+  '@formatjs/intl-relativetimeformat@12.3.15':
+    dependencies:
+      '@formatjs/intl-localematcher': 0.9.0
+
+  '@formatjs/intl-supportedvaluesof@2.3.10':
+    dependencies:
+      '@formatjs/fast-memoize': 3.1.7
 
   '@formatjs/intl@3.1.8(typescript@5.9.3)':
     dependencies:
@@ -7991,6 +8168,13 @@ snapshots:
       react: 19.2.4
     optionalDependencies:
       '@types/react': 19.3.0
+
+  '@react-native-community/netinfo@12.0.1(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.4)(supports-color@8.1.1))(@react-native/metro-config@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.2.4)(supports-color@8.1.1))(react@19.2.4)':
+    dependencies:
+      react: 19.2.4
+      react-native: 0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.4)(supports-color@8.1.1))(@react-native/metro-config@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.2.4)(supports-color@8.1.1)
+
+  '@react-native-community/slider@5.2.0': {}
 
   '@react-native-masked-view/masked-view@0.3.2(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.4)(supports-color@8.1.1))(@react-native/metro-config@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.2.4)(supports-color@8.1.1))(react@19.2.4)':
     dependencies:
@@ -9025,6 +9209,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  consola@3.4.2: {}
+
   content-type@1.0.5: {}
 
   content-type@2.1.0: {}
@@ -9523,6 +9709,17 @@ snapshots:
     transitivePeerDependencies:
       - expo
       - supports-color
+
+  expo-local-authentication@57.0.3(expo@57.0.23):
+    dependencies:
+      expo: 57.0.23(7dc703b3caaecfe6563a2cb1024e3d6d)
+      invariant: 2.2.4
+
+  expo-localization@57.0.2(expo@57.0.23)(react@19.2.4):
+    dependencies:
+      expo: 57.0.23(7dc703b3caaecfe6563a2cb1024e3d6d)
+      react: 19.2.4
+      rtl-detect: 1.1.2
 
   expo-manifests@57.0.2(expo@57.0.23):
     dependencies:
@@ -11937,6 +12134,8 @@ snapshots:
       '@rollup/rollup-win32-x64-msvc': 4.63.3
       fsevents: 2.3.3
 
+  rtl-detect@1.1.2: {}
+
   run-parallel@1.2.0:
     dependencies:
       queue-microtask: 1.2.3
@@ -12638,3 +12837,8 @@ snapshots:
   zod@3.25.76: {}
 
   zod@4.6.5: {}
+
+  zustand@5.0.15(@types/react@19.3.0)(react@19.2.4):
+    optionalDependencies:
+      '@types/react': 19.3.0
+      react: 19.2.4

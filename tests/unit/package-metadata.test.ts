@@ -1,0 +1,126 @@
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { isBuiltin } from "node:module";
+import { join, relative, resolve, sep } from "node:path";
+import { describe, expect, it } from "vitest";
+import { templateVersion } from "@/lib/version/version";
+
+const PACKAGES_DIR = join(process.cwd(), "packages");
+const TEMPLATE_DIR = join(PACKAGES_DIR, "mobile-template");
+const GENERATED_PROJECT_DIR = "template";
+const SOURCE_EXTENSIONS = /\.(ts|tsx|js|mjs)$/;
+const REGISTRY_URL = /https?:\/\/[^"']*registry/;
+const IMPORT_PATTERN = /(?:^|\n)[ \t]*(?:import[\s{*][^"']*?from\s*|import\s*|export[^"']*?from\s*|require\(\s*|from\s*)["']([^"']+)["']/g;
+
+type Manifest = { name: string; version: string; private?: boolean; license?: string; main?: string; bin?: Record<string, string>; files?: string[]; exports?: Record<string, unknown>; publishConfig?: { access?: string; registry?: string }; dependencies?: Record<string, string>; peerDependencies?: Record<string, string>; optionalDependencies?: Record<string, string>; devDependencies?: Record<string, string> };
+
+const packageDirs = readdirSync(PACKAGES_DIR).map((name) => join(PACKAGES_DIR, name));
+const readManifest = (dir: string): Manifest => JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
+
+function listSourceFiles(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    if (entry.name === "node_modules" || entry.name === GENERATED_PROJECT_DIR) return [];
+    const child = join(dir, entry.name);
+    if (entry.isDirectory()) return listSourceFiles(child);
+    return SOURCE_EXTENSIONS.test(entry.name) ? [child] : [];
+  });
+}
+
+function importedSpecifiers(file: string): string[] {
+  return [...readFileSync(file, "utf8").matchAll(IMPORT_PATTERN)].map((match) => match[1]);
+}
+
+function packageNameOf(specifier: string): string {
+  const [scope, name] = specifier.split("/");
+  return specifier.startsWith("@") ? `${scope}/${name}` : scope;
+}
+
+function exportTargets(manifest: Manifest): string[] {
+  return Object.values(manifest.exports ?? {}).flatMap((entry) =>
+    typeof entry === "string" ? [entry] : Object.values(entry as Record<string, string>),
+  );
+}
+
+describe("publishable packages", () => {
+  it.each(packageDirs)("%s ships its entry points without being private", (dir) => {
+    const manifest = readManifest(dir);
+
+    expect(manifest.private).not.toBe(true);
+    expect(manifest.name).toMatch(/^@[^/]+\/[^/]+$/);
+    expect(manifest.version).toMatch(/^\d+\.\d+\.\d+/);
+    expect(manifest.files?.length ?? 0).toBeGreaterThan(0);
+    if (manifest.main) {
+      expect(manifest.files?.some((entry) => manifest.main === entry || manifest.main?.startsWith(`${entry}/`))).toBe(true);
+    }
+    for (const bin of Object.values(manifest.bin ?? {})) {
+      expect(manifest.files?.some((entry) => bin === entry || bin.startsWith(`${entry}/`))).toBe(true);
+    }
+    for (const target of exportTargets(manifest)) expect(existsSync(join(dir, target))).toBe(true);
+  });
+
+  it.each(packageDirs)("%s only imports files inside its own package root", (dir) => {
+    for (const file of listSourceFiles(dir)) {
+      for (const specifier of importedSpecifiers(file)) {
+        if (!specifier.startsWith(".")) continue;
+        const target = relative(dir, resolve(file, "..", specifier));
+        expect(target.startsWith(`..${sep}`) || target === "..", `${file} imports ${specifier}`).toBe(false);
+      }
+    }
+  });
+
+  it.each(packageDirs)("%s declares every package it imports", (dir) => {
+    const manifest = readManifest(dir);
+    const declared = new Set([...Object.keys(manifest.dependencies ?? {}), ...Object.keys(manifest.peerDependencies ?? {}), ...Object.keys(manifest.devDependencies ?? {})]);
+
+    for (const file of listSourceFiles(dir)) {
+      for (const specifier of importedSpecifiers(file)) {
+        if (specifier.startsWith(".") || isBuiltin(specifier)) continue;
+        expect(declared.has(packageNameOf(specifier)), `${file} imports ${specifier}`).toBe(true);
+      }
+    }
+  });
+
+  it.each(packageDirs)("%s never hard-codes a registry URL", (dir) => {
+    expect(readFileSync(join(dir, "package.json"), "utf8")).not.toMatch(REGISTRY_URL);
+  });
+
+  it.each(packageDirs)("%s publishes with a plain npm publish", (dir) => {
+    const manifest = readManifest(dir);
+
+    expect(manifest.license).toBeTruthy();
+    expect(manifest.publishConfig?.access).toBe("public");
+    for (const field of ["dependencies", "peerDependencies", "optionalDependencies"] as const) {
+      const specs = Object.values(manifest[field] ?? {});
+      expect(specs.some((spec) => spec.startsWith("workspace:")), `${dir} ${field} uses the workspace protocol`).toBe(false);
+    }
+  });
+});
+
+describe("runtime package dependencies", () => {
+  const runtime = readManifest(TEMPLATE_DIR);
+  const bundled = ["expo", "expo-router", "expo-constants", "expo-linking", "expo-secure-store", "expo-splash-screen", "expo-status-bar", "expo-localization", "expo-local-authentication", "@tanstack/react-query", "react-intl", "@react-native-community/netinfo", "@react-native-community/slider", "zustand"];
+
+  it.each(bundled)("bundles %s so a package update raises that dependency", (name) => {
+    expect(runtime.dependencies?.[name], `${name} must be a dependency of ${runtime.name}`).toBeTruthy();
+  });
+
+  it("keeps react and react-native as peer dependencies so the app has a single instance", () => {
+    expect(runtime.peerDependencies).toHaveProperty("react");
+    expect(runtime.peerDependencies).toHaveProperty("react-native");
+    expect(runtime.dependencies ?? {}).not.toHaveProperty("react");
+    expect(runtime.dependencies ?? {}).not.toHaveProperty("react-native");
+  });
+
+  it("constrains react and react-native to the release line of the bundled Expo SDK", () => {
+    // Open-ended ranges let npm auto-install a newer react-native next to the bundled Expo SDK.
+    for (const peer of ["react", "react-native"]) {
+      expect(runtime.peerDependencies?.[peer], `${peer} must not be an open-ended range`).not.toMatch(/^[><=^]/);
+    }
+  });
+});
+
+describe("template metadata", () => {
+  it("exposes the published version through templateVersion", () => {
+    expect(templateVersion).toBe(readManifest(TEMPLATE_DIR).version);
+    expect(templateVersion).toMatch(/^\d+\.\d+\.\d+/);
+  });
+});

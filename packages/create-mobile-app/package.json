@@ -1,0 +1,18 @@
+{
+  "name": "@your-scope/create-mobile-app",
+  "version": "0.1.0",
+  "description": "Create an Expo app built on @your-scope/mobile-template, like create-react-app.",
+  "license": "MIT",
+  "bin": { "create-mobile-app": "bin/create.js" },
+  "files": ["bin", "template"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/streamwhite/mobile-dev-template-expo.git",
+    "directory": "packages/create-mobile-app"
+  },
+  "keywords": ["expo", "create-app", "scaffold", "react-native", "template"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": { "node": ">=18.0.0" }
+}

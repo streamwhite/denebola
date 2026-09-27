@@ -287,3 +287,34 @@ Temporary Items
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,linux,reactnative
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
+
+# Expo and Metro
+.expo/
+.expo-shared/
+web-build/
+dist/
+.metro-health-check*
+
+# Native local outputs and IDE state
+ios/Pods/
+ios/build/
+ios/DerivedData/
+android/.cxx/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+*.hprof
+
+# Test and generated reports
+test-results/
+playwright-report/
+compiled-messages/
+coverage/
+**/i18n/extracted.json
+.mobile-template-migrations.json
+
+# Local environment and tooling state
+.env.*.local
+.envrc
+.direnv/

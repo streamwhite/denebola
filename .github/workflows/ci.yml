@@ -2,7 +2,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [master]
 jobs:
   checks:
     runs-on: ubuntu-latest
@@ -17,5 +17,18 @@ jobs:
       - run: pnpm test:component
       - run: pnpm typecheck
       - run: pnpm format:check
+      # Proves every package is publishable with a plain `npm publish` (no extra tooling).
+      - run: pnpm publish:dry-run
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
+  consumer-fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 12 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      # Packs the runtime package, scaffolds a project and installs it without a pre-existing Expo install.
+      - run: pnpm verify:consumer

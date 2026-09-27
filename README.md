@@ -4,7 +4,8 @@ Production-oriented Expo + React Native foundation for iOS and Android.
 
 ## Included
 
-- Expo Router with route-based example screens
+- Expo Router with a generated entry layout, plus a scaffold that emits new projects
+- Publishable runtime package `@your-scope/mobile-template` with a consumer scaffold `@your-scope/create-mobile-app`
 - TypeScript strict mode and path aliases
 - TanStack Query provider
 - React Hook Form, Zod and React Intl-ready structure
@@ -17,7 +18,79 @@ Production-oriented Expo + React Native foundation for iOS and Android.
 - EAS development, preview and production profiles
 - Vitest unit tests and GitHub Actions checks
 - React Native Testing Library component test configuration and Playwright web smoke test
-- Optional capability packages for notifications, deep links, permissions, SQLite, biometrics, files, camera, device, analytics and logging
+- App config, environment resolution (`EXPO_PUBLIC_APP_ENV`), feature flags, app lifecycle, performance-monitor contracts and `consola`-based structured logging (`EXPO_PUBLIC_LOG_LEVEL`)
+- Navigation layer over Expo Router (helpers, `AppTabs`, `RouteGuard`/`AuthGuard`, navigation state) plus Universal/App Link wiring in the config plugin
+- Authentication: session/login/logout/register/password-reset/email-verification/restore, token refresh, auth guard, profile, RBAC, OAuth/OIDC abstraction and biometric unlock
+- Secure storage: keychain-backed key-value, token/credential stores, encryption abstraction, key rotation and secure delete
+- Client state: React local state, Zustand-backed global UI store, persistent state and reset/hydration
+- Server state: TanStack Query provider + hooks, query-key factory, cache invalidation/prefetch, optimistic updates, retry policy, background refetch, persistent offline cache and offline mutation queue
+- API/networking: typed client with auth headers, token refresh, timeout, backoff retry, cancellation, request/correlation ids, upload/download/multipart, SSE/streaming, WebSocket, and network/offline detection
+- i18n: locale detection/switching/fallback (`expo-localization` + `Storage`), ICU messages and pluralization, date/number/currency/relative-time formatters, translation validation and extraction
+- Design system: theme (light/dark/system) with design tokens, and common components (Button, Input/Textarea, Select/MultiSelect with search, Checkbox/Radio/Switch/Slider, Card/Badge/Avatar, Spinner/Skeleton, List, Dialog/BottomSheet/Toast/Tooltip, Search/Pagination/PullToRefresh/InfiniteList, SafeArea/Keyboard layout)
+- Optional native adapters for notifications, deep links, permissions, SQLite, biometrics, files, camera, device, analytics and logging (type-only contracts you implement in the app)
+
+## Use as a package
+
+The reusable runtime is published as `@your-scope/mobile-template`, and this repository also builds a scaffold in the same shape as `create-react-app`:
+
+```sh
+pnpm create @your-scope/mobile-app my-app
+cd my-app
+pnpm install
+pnpm dev
+```
+
+Or add the runtime to an existing Expo project:
+
+```sh
+pnpm add @your-scope/mobile-template
+```
+
+The application then owns only its entry, config and business code:
+
+```tsx
+// src/app/_layout.tsx
+import "../../global.css";
+import { Stack } from "expo-router";
+import { MobileTemplateProvider } from "@your-scope/mobile-template";
+
+export default function RootLayout() {
+  return (
+    <MobileTemplateProvider>
+      <Stack screenOptions={{ headerShown: false }} />
+    </MobileTemplateProvider>
+  );
+}
+```
+
+```ts
+// app.config.ts
+export default {
+  plugins: ["expo-router", "expo-secure-store", "expo-splash-screen", "@your-scope/mobile-template"],
+};
+```
+
+- Expo, Expo Router, the native modules and the app-facing stack are dependencies of the package, so `pnpm update @your-scope/mobile-template --latest` raises them together; native changes still require a new binary.
+- `pnpm exec mobile-template-doctor` reports the installed version, Expo compatibility and whether a rebuild is required.
+- The package never overwrites `src/app` or your features.
+
+### Publishing the package
+
+`packages/mobile-template` is an ordinary npm package: plain semver version, real dependency ranges, `publishConfig.access: "public"`, no build step and no release tooling.
+
+```sh
+cd packages/mobile-template
+npm publish --dry-run   # inspect tarball + target registry
+npm publish             # publish (prepublishOnly typechecks first)
+```
+
+Repository-level helpers exist for convenience only — `pnpm pack:packages`, `pnpm publish:dry-run` (both run in CI) and `pnpm verify:consumer` — but none of them is required to publish. Consumers then get the new stack the ordinary way:
+
+```sh
+pnpm update @your-scope/mobile-template --latest
+```
+
+Full consumer walkthrough with every recipe (data, auth, i18n, deep links, notifications, offline, native adapters, private registries): `examples/consumer/README.md`. Focused notes: `examples/basic`, `examples/auth`, `examples/offline`.
 
 ## Start
 
@@ -117,11 +190,50 @@ Requires macOS with Xcode:
 pnpm ios
 ```
 
+### Clearing caches
+
+Metro/JS and native build caches are separate.
+
+Clear the Metro bundler cache:
+
+```sh
+pnpm dev -- --clear
+```
+
+Clear the Android native Gradle build cache:
+
+```sh
+pnpm android -- --no-build-cache
+```
+
+Clear both at once (Metro in one terminal, native build in another):
+
+```sh
+# terminal 1
+pnpm dev -- --clear
+
+# terminal 2 (reuse the running Metro instead of starting a second one)
+pnpm android -- --no-build-cache --no-bundler
+```
+
+Options:
+
+- `--clear`: clears the Metro/JS bundle cache.
+- `--no-build-cache`: clears the Android native build cache.
+- `--no-bundler`: skips starting Metro, so it reuses the server from terminal 1.
+
+If a build is still stale, force a fresh native build:
+
+```sh
+rm -rf android/app/build
+pnpm android -- --no-build-cache
+```
+
 ### Notes
 
 - The QR code must be opened by the development build, not by Expo Go.
 - `pnpm dev:go` exists only for screens that do not require custom native modules.
-- Set `EXPO_PUBLIC_API_URL` from `.env.example`. Public Expo variables must not contain secrets.
+- Set `EXPO_PUBLIC_API_URL` and `EXPO_PUBLIC_APP_ENV` from `.env.example`. Public Expo variables must not contain secrets.
 
 ## Update Android tooling
 
@@ -322,28 +434,56 @@ Rules:
 - Put shared primitives in `src/components/ui/` and style screens with utility classes.
 - Restart Metro after changing `tailwind.config.js`.
 
+## Internationalization (Intl)
+
+Hermes on Android ships incomplete ICU data, so `Intl.NumberFormat`, `Intl.DateTimeFormat`, `Intl.PluralRules` and `Intl.RelativeTimeFormat` can fall back to English or, worse, format dates in UTC. `react-intl` surfaces this as `MISSING_DATA` errors.
+
+`src/lib/i18n/polyfills.ts` loads the FormatJS polyfills and the `en` / `zh` locale data, and is imported from `src/lib/i18n/locale.tsx`:
+
+```ts
+import "@formatjs/intl-datetimeformat/polyfill-force.js";
+import "@formatjs/intl-datetimeformat/add-golden-tz.js";
+import "@formatjs/intl-datetimeformat/locale-data/zh.js";
+```
+
+Notes:
+
+- `polyfill-force` replaces the native `Intl` implementation unconditionally, which is what we want on Hermes.
+- `add-golden-tz` is required: without timezone data the polyfill formats everything as UTC. It covers common zones including `Asia/Shanghai`. For the full IANA database use `@formatjs/intl-datetimeformat/add-all-tz.js` instead (larger bundle).
+- To add a locale, add its `locale-data/<locale>.js` imports in `polyfills.ts` and the matching messages in `src/lib/i18n/messages.ts`.
+
 ## Structure
 
-Application code lives in `src/`. Reusable package entry points live in `packages/`:
+Application code lives in `src/`. The distributable product lives in `packages/` and consists of exactly two ordinary npm packages:
 
-- `@your-scope/mobile-core`
-- `@your-scope/mobile-api`
-- `@your-scope/mobile-auth`
-- `@your-scope/mobile-storage`
-- `@your-scope/create-expo-app`
+- `@your-scope/mobile-template` — the runtime: providers, UI primitives, API/auth/storage/i18n/deep-link/notification abstractions, doctor binary and the Expo config plugin. Expo, Expo Router, the native modules and the app-facing stack are its dependencies.
+- `@your-scope/create-mobile-app` — the scaffold that generates a consumer project (`pnpm create @your-scope/mobile-app my-app`).
 
-Native capabilities such as notifications, SQLite, camera, biometrics and filesystem should be added only when a generated application needs them.
+One package keeps the release story boring: `cd packages/mobile-template && npm publish`. Anything a capability package would have re-exported is already exported by the runtime package, so there is no second package to version, no `workspace:` protocol to rewrite and no release tooling to run.
+
+Consumer examples live in `examples/` and are documentation only; the runnable fixture is generated on demand by `pnpm verify:consumer`.
 
 ## Checks
 
 ```sh
-pnpm test
+pnpm test                 # unit tests, including the scaffold and publish-metadata tests
+pnpm test:component       # React Native Testing Library
+pnpm test:e2e             # Playwright web smoke test
 pnpm typecheck
 pnpm format:check
-pnpm test:component
-pnpm test:e2e
+pnpm test:packages        # package-level unit tests
+pnpm pack:packages        # inspect the tarball each package would publish
+pnpm publish:dry-run      # prove every package publishes with a plain npm publish
+pnpm verify:consumer      # pack, scaffold, install, expo config, typecheck, doctor, single-instance
+```
+
+Publishing a package needs nothing beyond npm:
+
+```sh
+cd packages/mobile-template && npm publish
+cd packages/create-mobile-app && npm publish
 ```
 
 The template deliberately does not include a backend, authentication vendor, analytics vendor or business domain.
 
-Release and security procedures are documented in `docs/RELEASE.md` and `docs/SECURITY.md`.
+Release and security procedures are documented in `docs/RELEASE.md` and `docs/SECURITY.md`; package publishing is documented in `packages/mobile-template/README.md`.

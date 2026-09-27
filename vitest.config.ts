@@ -6,5 +6,5 @@ export default defineConfig({
     environment: "node",
     include: ["tests/**/*.test.ts"],
   },
-  resolve: { alias: { "@": resolve(__dirname, "src") } },
+  resolve: { alias: { "@": resolve(__dirname, "packages/mobile-template/src") } },
 });

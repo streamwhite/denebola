@@ -1,2 +1,0 @@
-export type NotificationPayload = { type: "message" | "profile"; id: string };
-export function parseNotificationPayload(value: unknown): NotificationPayload | null { if (!value || typeof value !== "object") return null; const data = value as Record<string, unknown>; return (data.type === "message" || data.type === "profile") && typeof data.id === "string" ? { type: data.type, id: data.id } : null; }

@@ -1,7 +1,0 @@
-{
-  "name": "@your-scope/create-expo-app",
-  "version": "0.1.0",
-  "private": true,
-  "bin": { "create-your-expo-app": "bin/create.js" },
-  "files": ["bin"]
-}
