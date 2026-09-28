@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 
-const TEMPLATE_PACKAGE = "@your-scope/mobile-template";
+const TEMPLATE_PACKAGE = "denebola";
 const UPDATE_BIN = join(process.cwd(), "packages/mobile-template/bin/update.mjs");
 const OFFLINE_REGISTRY = "http://127.0.0.1:9";
 const workDir = mkdtempSync(join(tmpdir(), "update-"));
@@ -41,7 +41,7 @@ function runUpdate(root: string) {
 
 afterAll(() => rmSync(workDir, { recursive: true, force: true }));
 
-describe("mobile-template-update", () => {
+describe("denebola-update", () => {
   it("reports health, upgrade type, compatibility and a dry-run plan", () => {
     const out = runUpdate(makeFixture({ expo: "57.0.23", react: "19.2.4", reactNative: "0.86.3" }));
 

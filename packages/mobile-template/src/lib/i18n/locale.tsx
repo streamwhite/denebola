@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import { IntlProvider, useIntl } from "react-intl";
 import "./polyfills";
-import { messages, type AppMessages, type Locale } from "./messages";
+import { mergeMessages, messages, type AppMessages, type Locale } from "./messages";
 
 export const DEFAULT_LOCALE: Locale = "en";
 export const SUPPORTED_LOCALES: string[] = Object.keys(messages);
@@ -15,9 +15,10 @@ type AppIntlProviderProps = { locale: string; setLocale: (locale: string) => voi
 
 function resolveMessages(value: Record<string, string> | AppMessages | undefined, locale: string): Record<string, string> {
   if (!value) return messages[locale as Locale] ?? messages[DEFAULT_LOCALE];
-  const nested = (value as AppMessages)[locale as Locale];
-  if (nested) return nested;
-  return value as Record<string, string>;
+  const nested = (value as AppMessages)[locale];
+  // Framework defaults stay underneath the app catalog so framework strings always resolve.
+  if (nested) return mergeMessages(locale, value as AppMessages);
+  return mergeMessages(locale, { [locale]: value as Record<string, string> });
 }
 
 export function AppIntlProvider({ locale, setLocale, messages: appMessages, children }: AppIntlProviderProps) {

@@ -32,13 +32,14 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-          # Public npm by default; set the repository variable NPM_REGISTRY_URL for a private registry.
-          registry-url: ${{ vars.NPM_REGISTRY_URL || 'https://registry.npmjs.org' }}
+          # Scoped packages publish to the private registry by default; override with the
+          # NPM_REGISTRY_URL repository variable (e.g. https://registry.npmjs.org).
+          registry-url: ${{ vars.NPM_REGISTRY_URL || 'https://registry.piaosiyuan.cn/js/' }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:packages
       - run: pnpm publish:dry-run
       - name: npm publish
         working-directory: ${{ inputs.package }}
-        run: npm publish
+        run: npm publish --registry ${{ vars.NPM_REGISTRY_URL || 'https://registry.piaosiyuan.cn/js/' }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

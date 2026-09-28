@@ -34,7 +34,7 @@ const readLayout = (root: string) => readFileSync(join(root, "src/app/_layout.ts
 
 afterAll(() => rmSync(workDir, { recursive: true, force: true }));
 
-describe("mobile-template-migrate", () => {
+describe("denebola-migrate", () => {
   it("reports planned changes without writing during a dry run", () => {
     const { root, migrationsPath } = makeFixture(checksum(OLD_CONTENT));
 
@@ -52,7 +52,7 @@ describe("mobile-template-migrate", () => {
 
     expect(readLayout(root)).toBe(NEW_CONTENT);
     expect(readFileSync(`${join(root, "src/app/_layout.tsx")}.bak`, "utf8")).toBe(OLD_CONTENT);
-    expect(JSON.parse(readFileSync(join(root, ".mobile-template-migrations.json"), "utf8")).applied).toEqual(["2026-01-layout"]);
+    expect(JSON.parse(readFileSync(join(root, ".denebola-migrations.json"), "utf8")).applied).toEqual(["2026-01-layout"]);
   });
 
   it("is idempotent once a migration has been applied", () => {
@@ -76,6 +76,6 @@ describe("mobile-template-migrate", () => {
 
     expect(status).not.toBe(0);
     expect(readLayout(root)).toBe(edited);
-    expect(existsSync(join(root, ".mobile-template-migrations.json"))).toBe(false);
+    expect(existsSync(join(root, ".denebola-migrations.json"))).toBe(false);
   });
 });

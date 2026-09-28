@@ -1,12 +1,12 @@
 # Consumer Example
 
-How an application installs, runs and extends `@your-scope/mobile-template`.
-`@your-scope/create-mobile-app` generates the project files shown here; the manual steps below are the same integration applied to an existing Expo project.
+How an application installs, runs and extends `denebola`.
+`create-denebola` generates the project files shown here; the manual steps below are the same integration applied to an existing Expo project.
 
 ## 1. Create a new project
 
 ```sh
-pnpm create @your-scope/mobile-app my-app
+pnpm create create-denebola my-app
 cd my-app
 pnpm install
 pnpm dev
@@ -33,26 +33,36 @@ Add business routes under `src/app` and features under `src/features`. Nothing o
 
 ### What is declared where
 
-| Declared by the generated project | Declared by `@your-scope/mobile-template` |
+| Declared by the generated project | Declared by `denebola` |
 | --- | --- |
 | `expo`, `expo-router` (entry points Metro, Babel and the config resolver read from the project root) | `expo`, `expo-router` (same ranges, deduplicated) |
 | `react`, `react-native`, `react-dom`, `react-native-web` | `expo-secure-store`, `expo-splash-screen`, `expo-linking`, `expo-constants`, `expo-status-bar` |
 | `nativewind`, `react-native-css-interop`, `react-native-reanimated`, `react-native-worklets` | `react-native-safe-area-context`, FormatJS Intl polyfills |
 | `react-intl`, `@tanstack/react-query`, `react-hook-form`, `@hookform/resolvers`, `zod` (so your own screens can import them under pnpm's isolated `node_modules`) | `react-intl`, `@tanstack/react-query` (same ranges, deduplicated) |
 
-`react` and `react-native` are peer dependencies of the package, so the app always provides the single copy. pnpm resolves everything else to exactly one version per range, which keeps React, React Native, React Intl and TanStack Query single-instance at runtime. Because Expo, Expo Router and the native modules are dependencies of the package, `pnpm update @your-scope/mobile-template --latest` raises the whole stack together — the app declares the entry points as well only because Metro, Babel and the Expo config resolver read them from the project root.
+`react` and `react-native` are peer dependencies of the package, so the app always provides the single copy. pnpm resolves everything else to exactly one version per range, which keeps React, React Native, React Intl and TanStack Query single-instance at runtime. Because Expo, Expo Router and the native modules are dependencies of the package, `pnpm update denebola --latest` raises the whole stack together — the app declares the entry points as well only because Metro, Babel and the Expo config resolver read them from the project root.
 
 ## 2. Add to an existing Expo project
 
 ```sh
-pnpm add @your-scope/mobile-template
+pnpm add denebola
 ```
 
 Then apply the one-time integration:
 
 1. Wrap the root layout (`src/app/_layout.tsx`), see below.
 2. Register the config plugin in `app.config.ts`.
-3. Keep NativeWind enabled (`babel.config.js`, `metro.config.js`, `tailwind.config.js`, `global.css`).
+3. Keep NativeWind enabled (`babel.config.js`, `metro.config.js`, `tailwind.config.js`, `global.css`). The `tailwind.config.js` `content` must also scan the runtime package source, or the framework components render unstyled because their `className` utilities are never generated:
+
+   ```js
+   const { dirname, join } = require("node:path");
+   const framework = join(dirname(require.resolve("denebola/package.json")), "src/**/*.{js,jsx,ts,tsx}");
+
+   module.exports = {
+     content: ["./src/**/*.{js,jsx,ts,tsx}", framework],
+     // …preset, theme, plugins
+   };
+   ```
 4. Align the toolchain with the versions the package expects:
 
    ```sh
@@ -69,7 +79,7 @@ Then apply the one-time integration:
 // src/app/_layout.tsx
 import "../../global.css";
 import { Stack } from "expo-router";
-import { MobileTemplateProvider } from "@your-scope/mobile-template";
+import { MobileTemplateProvider } from "denebola";
 
 export default function RootLayout() {
   return (
@@ -88,7 +98,7 @@ export default function RootLayout() {
 // app.config.ts
 export default {
   scheme: "myapp",
-  plugins: ["expo-router", "expo-secure-store", "expo-splash-screen", "@your-scope/mobile-template"],
+  plugins: ["expo-router", "expo-secure-store", "expo-splash-screen", "denebola"],
 };
 ```
 
@@ -99,13 +109,13 @@ The plugin only applies package-owned defaults (for example `userInterfaceStyle:
 The runtime package ships a doctor binary, so both generated and existing projects can run it:
 
 ```sh
-pnpm exec mobile-template-doctor
+pnpm exec denebola-doctor
 ```
 
 Generated projects also expose it as a script:
 
 ```sh
-pnpm mobile-template:doctor
+pnpm denebola:doctor
 ```
 
 ```text
@@ -118,18 +128,18 @@ react installed          19.2.4
 react-native expected    ~0.86.0
 react-native installed   0.86.3
 native rebuild           not required for JavaScript-only changes
-update                   pnpm update @your-scope/mobile-template --latest
+update                   pnpm update denebola --latest
 ```
 
 - `native rebuild: not required` means the installed Expo/native stack still matches the package, so JavaScript-only changes can ship through EAS Update.
 - `native rebuild: required` means the installed native stack drifted from the package (or the package moved to a new Expo SDK), so ship a new binary before the JavaScript update.
 
-`MOBILE_TEMPLATE_PACKAGE` overrides the package name the doctor inspects, and `NPM_CONFIG_REGISTRY` overrides the registry it asks for the latest version.
+`DENEBOLA_PACKAGE` overrides the package name the doctor inspects, and `NPM_CONFIG_REGISTRY` overrides the registry it asks for the latest version.
 ## 4. Build a business screen
 
 ```tsx
 // src/app/index.tsx
-import { Card, Screen, Text } from "@your-scope/mobile-template";
+import { Card, Screen, Text } from "denebola";
 
 export default function HomeScreen() {
   return (
@@ -146,7 +156,7 @@ export default function HomeScreen() {
 The design system ships a theme and the common components: `ThemeProvider`/`useTheme` (light/dark/system) with design tokens (`colors`, `spacing`, `radius`, `fontSize`, `fontWeight`, `lineHeight`, `shadow`, `typography`) and hooks (`useColors`, `useSpacing`, `useTypography`); `Text` (`variant`, `tone`), `Button` (variant/size/loading), `Input`/`Textarea`, `Select`/`MultiSelect` (searchable + free input), `Checkbox`/`Radio`/`Switch`/`Slider`, `Card`/`Badge`/`Avatar`, `Spinner`/`Skeleton`, `List`/`ListItem`, `Dialog`/`ConfirmationDialog`/`BottomSheet`/`Tooltip`, `useToast`, `Search`/`Pagination`/`PullToRefresh`/`InfiniteList`, and `Screen`/`Container`/`KeyboardAvoidingScreen`/`SafeAreaView`. All accept NativeWind `className` and use the theme tokens.
 
 ```tsx
-import { Button, Card, Screen, Text, useText, useToast, type TypographyVariant } from "@your-scope/mobile-template";
+import { Button, Card, Screen, Text, useText, useToast, type TypographyVariant } from "denebola";
 
 function OrdersEmpty() {
   const text = useText();
@@ -166,8 +176,8 @@ function OrdersEmpty() {
 ## 5. Data, auth and storage
 
 ```tsx
-import { createApiClient, secureStorage, createSessionManager, AuthProvider, useAuth, Card, ErrorState, LoadingState, Screen, Text } from "@your-scope/mobile-template";
-import type { Session } from "@your-scope/mobile-template";
+import { createApiClient, secureStorage, createSessionManager, AuthProvider, useAuth, Card, ErrorState, LoadingState, Screen, Text } from "denebola";
+import type { Session } from "denebola";
 import { useQuery } from "@tanstack/react-query";
 
 const sessionManager = createSessionManager(secureStorage);
@@ -203,7 +213,7 @@ export function OrdersScreen() {
 `createApiClient` adds an `Accept` header, JSON content type, a bearer token from `getToken`, `Accept-Language` from `locale()`, an `X-Request-Id`/`X-Correlation-Id`, a configurable timeout, exponential-backoff retry (network + 5xx) and normalized `ApiError` failures (`status`, `code`, `details`, `retryable`, `requestId`). `refreshToken` retries the request once on 401. Use `api.requestWithMeta` for status/headers/requestId, `{ signal }` to cancel, `{ expect: "none" }` for 204, and pass the client to `<MobileTemplateProvider apiClient={api}>` to read it via `useApiClient()`.
 
 ```ts
-import { createWebSocketClient, subscribeToSSE, toFormData, uploadWithProgress, downloadBlob, useNetwork, useIsOffline } from "@your-scope/mobile-template";
+import { createWebSocketClient, subscribeToSSE, toFormData, uploadWithProgress, downloadBlob, useNetwork, useIsOffline } from "denebola";
 
 await uploadWithProgress({ url: `${base}/files`, form: toFormData({ title }, { file: { uri, name, type } }), onProgress: setProgress });
 await downloadBlob(url);
@@ -219,7 +229,7 @@ Swap `secureStorage` for `createMemoryStorage()` in tests; any `Storage` impleme
 ### Auth, RBAC, OAuth and biometrics
 
 ```tsx
-import { AuthProvider, AuthGuard, useAuth, useCan, useAuthGuard, createExpoBiometricAdapter, unlockWithBiometrics, createCredentialStore } from "@your-scope/mobile-template";
+import { AuthProvider, AuthGuard, useAuth, useCan, useAuthGuard, createExpoBiometricAdapter, unlockWithBiometrics, createCredentialStore } from "denebola";
 
 <AuthProvider client={authClient}>
   <Stack />
@@ -240,7 +250,7 @@ const credentials = createCredentialStore(secureStorage);          // "remember 
 ### Secure storage (encryption, rotation, delete)
 
 ```ts
-import { createSecureKV, createKeyRotation } from "@your-scope/mobile-template";
+import { createSecureKV, createKeyRotation } from "denebola";
 
 const rotation = createKeyRotation({ storage: secureStorage });
 if (rotation.isDue(await rotation.read("signing-key"))) await rotation.rotate("signing-key", deriveNext);
@@ -251,7 +261,7 @@ if (rotation.isDue(await rotation.read("signing-key"))) await rotation.rotate("s
 ### Server state (TanStack Query, cache, offline)
 
 ```ts
-import { createQueryKeys, createQueryPersister, createSyncQueue, invalidateScope, optimisticListUpdate, rollbackQueries, useMutation, useQuery } from "@your-scope/mobile-template";
+import { createQueryKeys, createQueryPersister, createSyncQueue, invalidateScope, optimisticListUpdate, rollbackQueries, useMutation, useQuery } from "denebola";
 
 const orders = createQueryKeys("orders");
 const persister = createQueryPersister(storage);
@@ -273,7 +283,7 @@ Queries retry network/5xx errors (not 4xx), refetch on reconnect, and cache thro
 ### Client state (Zustand, persistent, reset)
 
 ```ts
-import { createStore, createUiStore, useStore, useUiStore } from "@your-scope/mobile-template";
+import { createStore, createUiStore, useStore, useUiStore } from "denebola";
 
 const useCart = createStore<{ items: string[]; add: (id: string) => void }>(
   {
@@ -292,7 +302,7 @@ Persist is backed by any `Storage` (secure storage, memory, or a custom one); `o
 ## 6. i18n and formatting
 
 ```tsx
-import { LocaleSwitcher, useI18nFormatters, useLocale, useText } from "@your-scope/mobile-template";
+import { LocaleSwitcher, useI18nFormatters, useLocale, useText } from "denebola";
 import { appMessages, supportedLocales } from "./src/messages";
 
 // one-time: detect the device locale, persist the choice, load app translations
@@ -322,7 +332,7 @@ Framework messages live in the runtime package (`en`, `zh-CN`) for shared labels
 ## 7. Deep links, notifications and permissions
 
 ```tsx
-import { subscribeToDeepLinks, handleDeepLink, isAllowedExternalUrl, parseNotificationPayload, notificationPath, requestPermission } from "@your-scope/mobile-template";
+import { subscribeToDeepLinks, handleDeepLink, isAllowedExternalUrl, parseNotificationPayload, notificationPath, requestPermission } from "denebola";
 
 // cold and warm deep links, allowlisted per scheme
 useEffect(() => subscribeToDeepLinks({ scheme: "myapp", allowedPaths: [/^\/profile\/[^/]+$/, /^\/orders$/] }), []);
@@ -342,7 +352,7 @@ const granted = await requestPermission(permissionService, async () => showRatio
 ## 8. Offline queue, lifecycle, device and diagnostics
 
 ```tsx
-import { createSyncQueue, subscribeToLifecycle, device, appVersion, templateVersion, logger, noopAnalytics, defaultFeatureFlags, migrate, createPluginRegistry } from "@your-scope/mobile-template";
+import { createSyncQueue, subscribeToLifecycle, device, appVersion, templateVersion, logger, noopAnalytics, defaultFeatureFlags, migrate, createPluginRegistry } from "denebola";
 
 const queue = createSyncQueue<{ orderId: string }>();
 queue.enqueue({ orderId: "42" });          // list() / remove(id)
@@ -361,7 +371,7 @@ noopAnalytics.track("screen_view", { name: "orders" });
 ### App config, environment, flags, lifecycle, performance and errors
 
 ```tsx
-import { appConfig, environment, isProduction, device, platform, appVersion, useFeatureFlag, useAppLifecycle, usePerformanceMonitor, measure, installGlobalErrorHandler, type ErrorReporter } from "@your-scope/mobile-template";
+import { appConfig, environment, isProduction, device, platform, appVersion, useFeatureFlag, useAppLifecycle, usePerformanceMonitor, measure, installGlobalErrorHandler, type ErrorReporter } from "denebola";
 
 appConfig.name;          // from app.config.ts via expo-constants
 environment;             // "development" | "preview" | "production" (EXPO_PUBLIC_APP_ENV)
@@ -384,7 +394,7 @@ Feature flags can be injected through `MobileTemplateProvider featureFlags={{ of
 ### Navigation
 
 ```tsx
-import { AppTabs, AuthGuard, RouteGuard, navigation, modalScreenOptions, buildDeepLink, isRouteActive, useNavigationState } from "@your-scope/mobile-template";
+import { AppTabs, AuthGuard, RouteGuard, navigation, modalScreenOptions, buildDeepLink, isRouteActive, useNavigationState } from "denebola";
 
 navigation.push("/orders", { page: 2 });   // path + query helper
 openModal("/filters");                     // modal stack screen
@@ -399,7 +409,7 @@ openModal("/filters");                     // modal stack screen
 ### Structured logging
 
 ```ts
-import { createLogger, createMemoryLogSink, createPersistentLogSink, createMemoryStorage } from "@your-scope/mobile-template";
+import { createLogger, createMemoryLogSink, createPersistentLogSink, createMemoryStorage } from "denebola";
 
 const sink = createMemoryLogSink({ maxEntries: 500 });            // rotation in memory
 const persistent = createPersistentLogSink({ storage, key: "logs" }); // restore()/flush() around app lifecycle
@@ -420,10 +430,10 @@ OS-level rotation.
 
 ## 9. One package, everything inside
 
-There is a single runtime package to install, version and update — everything the runtime exports comes from `@your-scope/mobile-template`, and there are no capability packages to keep in sync.
+There is a single runtime package to install, version and update — everything the runtime exports comes from `denebola`, and there are no capability packages to keep in sync.
 
 ```ts
-import { createApiClient, createSyncQueue, parseDeepLink, secureStorage } from "@your-scope/mobile-template";
+import { createApiClient, createSyncQueue, parseDeepLink, secureStorage } from "denebola";
 ```
 
 The package's own `dependencies` carry the rest of the stack (`expo`, `expo-router`, `expo-constants`, `expo-linking`, `expo-secure-store`, `expo-splash-screen`, `expo-status-bar`, `@tanstack/react-query`, `react-intl`, FormatJS Intl polyfills), so one version bump raises all of them:
@@ -433,30 +443,30 @@ pnpm why expo    # one entry, coming from the runtime package's dependency range
 pnpm why react-intl
 ```
 
-If a future capability really warrants its own dependency (for example an optional native module you do not want installed by default), publish it as its own ordinary package with `"@your-scope/mobile-template": "^<version>"` and re-export what it needs — a plain `npm publish`, nothing in the runtime changes.
+If a future capability really warrants its own dependency (for example an optional native module you do not want installed by default), publish it as its own ordinary package with `"denebola": "^<version>"` and re-export what it needs — a plain `npm publish`, nothing in the runtime changes.
 
 ## 10. Update the runtime
 
 ```sh
-pnpm update @your-scope/mobile-template --latest
+pnpm update denebola --latest
 ```
 
 - The application keeps its own lockfile and business code; nothing in `src/app` or `src/features` is rewritten.
 - The package bump raises Expo, Expo Router and the native modules with it, so the whole native stack stays aligned.
 - JavaScript-only changes can ship with EAS Update when the runtime version still matches. Any change that alters compiled native code or native configuration requires a new binary.
-- `pnpm exec mobile-template-doctor` reports installed vs latest, Expo compatibility and whether a rebuild is required.
+- `pnpm exec denebola-doctor` reports installed vs latest, Expo compatibility and whether a rebuild is required.
 - Use the exported `templateVersion` for in-app diagnostics:
 
   ```tsx
-  import { templateVersion, appVersion } from "@your-scope/mobile-template";
+  import { templateVersion, appVersion } from "denebola";
   logger.info("versions", { templateVersion, appVersion });
   ```
 
 ### Framework file migrations (only if a release ships one)
 
 ```sh
-pnpm mobile-template:migrate --dry-run   # show what would change, write nothing
-pnpm mobile-template:migrate             # apply, backing up changed files as .bak
+pnpm denebola:migrate --dry-run   # show what would change, write nothing
+pnpm denebola:migrate             # apply, backing up changed files as .bak
 ```
 
 Migrations only target files the framework generated and recorded, never `src/app` routes or
@@ -465,7 +475,7 @@ Runtime updates themselves still arrive through `pnpm update`, not file replacem
 
 ## 11. Ownership rules
 
-Owned by `@your-scope/mobile-template`:
+Owned by `denebola`:
 
 ```text
 runtime package code, providers, UI primitives, hooks
@@ -495,10 +505,10 @@ echo "registry=https://npm.pkg.github.com" >> .npmrc
 
 # the doctor and the scaffold read these
 export NPM_CONFIG_REGISTRY=https://npm.pkg.github.com
-export MOBILE_TEMPLATE_PACKAGE=@acme/mobile-template   # fork that publishes under another name
+export DENEBOLA_PACKAGE=@acme/denebola   # fork that publishes under another name
 ```
 
-`NPM_CONFIG_REGISTRY` is the registry the doctor queries, `MOBILE_TEMPLATE_PACKAGE` is the package name it inspects and the one the scaffold writes into new projects. Publishing is a plain `npm publish` in the package directory (`publishConfig.access` is already `public`, dependencies are plain semver ranges), with `NPM_CONFIG_REGISTRY` and `NODE_AUTH_TOKEN` selecting a private registry when needed.
+`NPM_CONFIG_REGISTRY` is the registry the doctor queries, `DENEBOLA_PACKAGE` is the package name it inspects and the one the scaffold writes into new projects. Publishing is a plain `npm publish` in the package directory (`publishConfig.access` is already `public`, dependencies are plain semver ranges), with `NPM_CONFIG_REGISTRY` and `NODE_AUTH_TOKEN` selecting a private registry when needed.
 
 ## 13. Reproduce this flow
 
@@ -519,7 +529,7 @@ The packed tarball is an ordinary npm package: one declared dependency pulls the
 
 ```sh
 mkdir npm-consumer && cd npm-consumer && npm init -y
-npm install ./your-scope-mobile-template-0.1.0.tgz
+npm install ./denebola-0.1.0.tgz
 ```
 
 ```text
@@ -531,4 +541,4 @@ react-intl   7.1.14
 @tanstack/react-query 5.103.1
 ```
 
-`node_modules/.bin/mobile-template-doctor` is available after that install, and `require("@your-scope/mobile-template/app.plugin")` returns the config plugin function. For a real app you still declare `react`, `react-native` and the toolchain entry points yourself (as the generated project does) so the versions match your Expo SDK line; the package's peer ranges (`react ~19.2.0`, `react-native ~0.86.0`) tell you immediately when they do not.
+`node_modules/.bin/denebola-doctor` is available after that install, and `require("denebola/app.plugin")` returns the config plugin function. For a real app you still declare `react`, `react-native` and the toolchain entry points yourself (as the generated project does) so the versions match your Expo SDK line; the package's peer ranges (`react ~19.2.0`, `react-native ~0.86.0`) tell you immediately when they do not.

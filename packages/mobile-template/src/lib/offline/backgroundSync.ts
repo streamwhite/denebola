@@ -8,7 +8,7 @@ export type BackgroundSync<T> = {
   runOnce: () => Promise<number>;
 };
 
-export const BACKGROUND_SYNC_TASK = "mobile-template.sync";
+export const BACKGROUND_SYNC_TASK = "denebola.sync";
 export const DEFAULT_MINIMUM_INTERVAL_MS = 15 * 60 * 1_000;
 
 export type BackgroundSyncOptions<T> = {

@@ -6,7 +6,7 @@ commands below turn that update into a guided, verifiable sync.
 ## 1. Check the current state
 
 ```sh
-pnpm exec mobile-template-doctor
+pnpm exec denebola-doctor
 ```
 
 Reports the installed version, the latest published version, the Expo/React Native line the
@@ -15,7 +15,7 @@ package integrates, and whether the installed native stack drifts (which require
 ## 2. Review the upgrade
 
 ```sh
-pnpm exec mobile-template-update
+pnpm exec denebola-update
 ```
 
 Prints, without writing anything:
@@ -28,7 +28,7 @@ Prints, without writing anything:
 ## 3. Update the package
 
 ```sh
-pnpm update @your-scope/mobile-template --latest
+pnpm update denebola --latest
 ```
 
 Because Expo, Expo Router and the native modules are dependencies of the package, this raises the
@@ -38,12 +38,12 @@ the line the package integrates (the doctor flags drift).
 ## 4. Apply framework-file migrations
 
 ```sh
-pnpm exec mobile-template-update --apply
+pnpm exec denebola-update --apply
 ```
 
 Only files the framework generated are considered. The engine plans first, refuses to write on a
 checksum conflict or missing file, backs up every changed file with a `.bak` suffix and records
-applied ids in `.mobile-template-migrations.json`. Business files are never touched.
+applied ids in `.denebola-migrations.json`. Business files are never touched.
 
 ## 5. Rebuild when the native stack changed
 

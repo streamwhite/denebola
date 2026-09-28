@@ -1,5 +1,5 @@
 {
-  "name": "mobile-dev-template-expo",
+  "name": "denebola",
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@12.3.4",
@@ -36,11 +36,14 @@
     "update:production": "eas update --channel production --message",
     "test:packages": "vitest run tests/unit",
     "pack:packages": "pnpm -r --filter \"./packages/**\" exec npm pack --dry-run",
-    "publish:dry-run": "pnpm -r --filter \"./packages/**\" exec npm publish --dry-run",
+    "publish:dry-run": "pnpm -r --filter \"./packages/**\" exec npm publish --dry-run --registry https://registry.piaosiyuan.cn/js/",
     "verify:consumer": "bash scripts/verify-consumer-fixture.sh",
-    "template:doctor": "node packages/mobile-template/bin/doctor.mjs",
-    "template:update": "node packages/mobile-template/bin/update.mjs",
-    "template:migrate": "node packages/mobile-template/bin/migrate.mjs"
+    "release": "node scripts/release.mjs",
+    "release:dry-run": "node scripts/release.mjs patch",
+    "create:test-project": "bash scripts/create-test-project.sh",
+    "denebola:doctor": "node packages/mobile-template/bin/doctor.mjs",
+    "denebola:update": "node packages/mobile-template/bin/update.mjs",
+    "denebola:migrate": "node packages/mobile-template/bin/migrate.mjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",
@@ -52,7 +55,7 @@
     "@formatjs/intl-relativetimeformat": "^12.3.15",
     "@hookform/resolvers": "^5.9.1",
     "@tanstack/react-query": "^5.103.1",
-    "@your-scope/mobile-template": "workspace:*",
+    "denebola": "workspace:*",
     "expo": "~57.0.23",
     "expo-constants": "~57.0.18",
     "expo-dev-client": "~57.0.19",
@@ -68,10 +71,10 @@
     "react-intl": "^7.1.14",
     "react-native": "0.86.3",
     "react-native-css-interop": "0.2.7",
-    "react-native-reanimated": "^4.6.0",
+    "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.10.0",
     "react-native-web": "^0.21.2",
-    "react-native-worklets": "^0.12.2",
+    "react-native-worklets": "0.10.1",
     "zod": "^4.6.5"
   },
   "devDependencies": {

@@ -5,11 +5,13 @@ export const radius = { none: 0, sm: 4, md: 8, lg: 12, xl: 16, "2xl": 24, full: 
 export const fontSize = { xs: 12, sm: 14, base: 16, lg: 18, xl: 20, "2xl": 24, "3xl": 30, "4xl": 36 } as const;
 export const fontWeight = { normal: "400", medium: "500", semibold: "600", bold: "700", extrabold: "800" } as const;
 export const lineHeight = { xs: 16, sm: 20, base: 24, lg: 28, xl: 28, "2xl": 32, "3xl": 36, "4xl": 40 } as const;
+// `boxShadow` is supported on iOS, Android (New Architecture) and web; the legacy
+// shadow* props are deprecated on web. `elevation` keeps Android's legacy shadow.
 export const shadow = {
   none: {},
-  sm: { shadowOpacity: 0.08, shadowRadius: 4, elevation: 2 },
-  md: { shadowOpacity: 0.12, shadowRadius: 8, elevation: 4 },
-  lg: { shadowOpacity: 0.16, shadowRadius: 16, elevation: 8 },
+  sm: { boxShadow: "0 1px 2px rgba(0, 0, 0, 0.08)", elevation: 2 },
+  md: { boxShadow: "0 2px 8px rgba(0, 0, 0, 0.12)", elevation: 4 },
+  lg: { boxShadow: "0 8px 16px rgba(0, 0, 0, 0.16)", elevation: 8 },
 } as const;
 
 export const palette = {

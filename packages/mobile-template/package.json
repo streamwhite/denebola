@@ -1,5 +1,5 @@
 {
-  "name": "@your-scope/mobile-template",
+  "name": "denebola",
   "version": "0.1.0",
   "description": "Production-oriented Expo + React Native foundation as an installable runtime package.",
   "license": "MIT",
@@ -27,9 +27,9 @@
     "README.md"
   ],
   "bin": {
-    "mobile-template-doctor": "bin/doctor.mjs",
-    "mobile-template-migrate": "bin/migrate.mjs",
-    "mobile-template-update": "bin/update.mjs"
+    "denebola-doctor": "bin/doctor.mjs",
+    "denebola-migrate": "bin/migrate.mjs",
+    "denebola-update": "bin/update.mjs"
   },
   "repository": {
     "type": "git",

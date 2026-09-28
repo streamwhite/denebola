@@ -1,6 +1,6 @@
 import "../../global.css";
 import { Stack } from "expo-router";
-import { MobileTemplateProvider } from "@your-scope/mobile-template";
+import { MobileTemplateProvider } from "denebola";
 
 export default function RootLayout() {
   return (

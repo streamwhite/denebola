@@ -4,10 +4,10 @@ import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 
-const TEMPLATE_PACKAGE = "@your-scope/mobile-template";
+const TEMPLATE_PACKAGE = "denebola";
 const CREATE_BIN = join(process.cwd(), "packages/create-mobile-app/bin/create.js");
 const DOCTOR_BIN = join(process.cwd(), "packages/mobile-template/bin/doctor.mjs");
-const PLACEHOLDERS = /\{\{(name|packageName)\}\}/;
+const PLACEHOLDERS = /\{\{(name|packageName|appId|scheme)\}\}/;
 const PROJECT_NAME = "fixture-app";
 const workDir = mkdtempSync(join(tmpdir(), "create-mobile-app-"));
 const projectDir = join(workDir, PROJECT_NAME);
@@ -36,8 +36,8 @@ describe("create-mobile-app", () => {
     const manifest = JSON.parse(read("package.json"));
     expect(manifest.name).toBe(PROJECT_NAME);
     expect(manifest.dependencies[TEMPLATE_PACKAGE]).toMatch(/^\^\d+\.\d+\.\d+$/);
-    expect(manifest.scripts["mobile-template:doctor"]).toBe("mobile-template-doctor");
-    expect(manifest.scripts["mobile-template:migrate"]).toBe("mobile-template-migrate");
+    expect(manifest.scripts["denebola:doctor"]).toBe("denebola-doctor");
+    expect(manifest.scripts["denebola:migrate"]).toBe("denebola-migrate");
     expect(manifest.scripts.test).toBe("vitest run");
     for (const tool of ["expo", "expo-router", "react", "react-native", "nativewind", "react-intl", "@tanstack/react-query", "react-hook-form", "zod"]) {
       expect(manifest.dependencies).toHaveProperty(tool);
@@ -71,9 +71,34 @@ describe("create-mobile-app", () => {
     }
   });
 
+  it("derives a valid app id and scheme even when the project name has invalid characters", () => {
+    const dashed = "My-Cool.App";
+    const dashedDir = join(workDir, dashed);
+    execFileSync(process.execPath, [CREATE_BIN, dashed], { cwd: workDir, encoding: "utf8" });
+
+    const config = readFileSync(join(dashedDir, "app.config.ts"), "utf8");
+    const appId = /bundleIdentifier: "([^"]+)"/.exec(config)?.[1] ?? "";
+    const scheme = /scheme: "([^"]+)"/.exec(config)?.[1] ?? "";
+
+    // Java package rules: alphanumeric segments, each starting with a letter.
+    expect(appId).toBe("com.example.mycoolapp");
+    expect(appId.split(".").every((segment) => /^[a-z][a-z0-9]*$/.test(segment))).toBe(true);
+    expect(appId).not.toContain("-");
+    expect(scheme).toBe("mycoolapp");
+    expect(JSON.parse(readFileSync(join(dashedDir, "package.json"), "utf8")).name).toBe("my-cool-app");
+  });
+
   it("wires the provider and the config plugin to the runtime package", () => {
     expect(read("src/app/_layout.tsx")).toContain(`from "${TEMPLATE_PACKAGE}"`);
     expect(read("app.config.ts")).toContain(`"${TEMPLATE_PACKAGE}"`);
+  });
+
+  it("scans the runtime package source so framework className utilities are generated", () => {
+    // Without this the framework components render unstyled: tailwind never sees their classes.
+    const tailwind = read("tailwind.config.js");
+    expect(tailwind).toContain(TEMPLATE_PACKAGE);
+    expect(tailwind).toContain("src/**/*.{js,jsx,ts,tsx}");
+    expect(tailwind).toContain("content:");
   });
 
   it("wires app-owned messages into the provider so UI text stays externalized", () => {

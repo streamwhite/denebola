@@ -1,13 +1,14 @@
 #!/usr/bin/env node
-// `mobile-template-update` is the guided sync command: it reports health, checks native
+// `denebola-update` is the guided sync command: it reports health, checks native
 // compatibility, classifies the version change, and plans framework-file migrations.
 // It never writes unless `--apply` is passed, and it delegates writes to the migrate engine,
 // which refuses to overwrite consumer-edited files.
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { isBreaking, isNewer, sameLine } from "./compat.mjs";
+import { isEntryPoint } from "./entry.mjs";
 import { healthRows, latestPublished, readStack, TEMPLATE_PACKAGE } from "./health.mjs";
 import { planMigrations } from "./migrate.mjs";
 
@@ -34,7 +35,7 @@ async function loadMigrations() {
 }
 
 function readState(cwd) {
-  const file = resolve(cwd, ".mobile-template-migrations.json");
+  const file = resolve(cwd, ".denebola-migrations.json");
   if (!existsSync(file)) return [];
   try {
     const value = JSON.parse(readFileSync(file, "utf8"));
@@ -87,5 +88,5 @@ async function main() {
   execFileSync(process.execPath, [MIGRATE_BIN, ...argv.filter((arg) => arg.startsWith("--migrations"))], { cwd, stdio: "inherit" });
 }
 
-const invoked = process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+const invoked = isEntryPoint(import.meta.url);
 if (invoked) main().catch((error) => { console.error(error); process.exitCode = 1; });

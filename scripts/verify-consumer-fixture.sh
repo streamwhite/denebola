@@ -7,7 +7,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TEMPLATE_DIR="$REPO_ROOT/packages/mobile-template"
 CREATE_BIN="$REPO_ROOT/packages/create-mobile-app/bin/create.js"
-PACKAGE_SPEC="@your-scope/mobile-template"
+PACKAGE_SPEC="denebola"
 PROJECT_NAME="fixture-app"
 SINGLE_INSTANCE_PACKAGES="expo|react|react-native|expo-router|react-intl|@tanstack\+react-query"
 EXPECTED_SINGLE_INSTANCE=6
@@ -17,7 +17,7 @@ mkdir -p "$WORK_DIR"
 
 echo "==> work dir: $WORK_DIR"
 ( cd "$TEMPLATE_DIR" && npm pack --pack-destination "$WORK_DIR" > /dev/null )
-TARBALL="$(ls "$WORK_DIR"/*mobile-template-*.tgz)"
+TARBALL="$(ls "$WORK_DIR"/denebola-*.tgz)"
 echo "==> packed $(basename "$TARBALL")"
 CONTENTS="$(tar tzf "$TARBALL")"
 grep -qE "^package/(app.plugin.js|src/index.tsx|bin/doctor.mjs|package.json)$" <<< "$CONTENTS"
@@ -36,7 +36,7 @@ echo "==> expo config resolved with the template config plugin"
 pnpm exec tsc --noEmit
 echo "==> consumer entry files typecheck against the packaged entry points"
 
-pnpm mobile-template:doctor
+pnpm denebola:doctor
 
 count="$(ls node_modules/.pnpm | grep -cE "^($SINGLE_INSTANCE_PACKAGES)@")"
 [ "$count" -eq "$EXPECTED_SINGLE_INSTANCE" ] || { echo "expected $EXPECTED_SINGLE_INSTANCE single-instance packages, found $count"; exit 1; }

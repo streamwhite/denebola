@@ -1,7 +1,7 @@
 # Framework Capability Inventory
 
 Phase 0 artifact for `docs/OPINIONATED-MOBILE-FRAMEWORK-PLAN.md`: the auditable list of what
-`@your-scope/mobile-template` ships, what is only a contract, and what is intentionally
+`denebola` ships, what is only a contract, and what is intentionally
 deferred. Kept in sync with `packages/mobile-template/src/index.tsx` and the package tests.
 
 Status legend:
@@ -80,15 +80,15 @@ Status legend:
 | --- | --- | --- | --- |
 | Framework version | `frameworkVersion`, `templateVersion`, `framework` | stable | yes |
 | Module version | `MODULE_VERSIONS`, `moduleVersion`, `listModuleVersions` | stable | yes |
-| Migration system | `mobile-template-migrate` + `FrameworkMigration`, `MigrationFile` | tool | — |
+| Migration system | `denebola-migrate` + `FrameworkMigration`, `MigrationFile` | tool | — |
 | Migration kinds | `MigrationKind` (`config` / `dependency` / `template`), `migrationSummary` | stable | — |
 | Codemod | `Codemod`, `codemodById`, `DEFAULT_CODEMODS` | stable | — |
 | Breaking change detection | `classifyChange`, `isBreaking`, `isNewer`, `compareSemver`, `parseSemver` | stable | — |
 | Version compatibility matrix | `VERSION_MATRIX`, `checkCompatibility`, `latestCompatibleLine`, `upgradeAvailable` | stable | 0.1 |
-| Update CLI | `mobile-template-update` (`--apply`) | tool | — |
+| Update CLI | `denebola-update` (`--apply`) | tool | — |
 | Changelog | `CHANGELOG.md` | tool | — |
 | Upgrade guide | `docs/UPGRADING.md` | tool | — |
-| doctor / health check | `mobile-template-doctor` | tool | — |
+| doctor / health check | `denebola-doctor` | tool | — |
 
 ## Data and security
 
@@ -285,11 +285,11 @@ Status legend:
 
 | Capability | Public API | Status |
 | --- | --- | --- |
-| Config plugin (defaults, Universal/App Links, native permissions, build identifiers) | `@your-scope/mobile-template/app.plugin` | tool |
-| Diagnostics | `mobile-template-doctor` | tool |
-| Framework file migrations | `mobile-template-migrate` | tool |
-| Guided update / sync | `mobile-template-update` | tool |
-| Project generator | `@your-scope/create-mobile-app` | tool |
+| Config plugin (defaults, Universal/App Links, native permissions, build identifiers) | `denebola/app.plugin` | tool |
+| Diagnostics | `denebola-doctor` | tool |
+| Framework file migrations | `denebola-migrate` | tool |
+| Guided update / sync | `denebola-update` | tool |
+| Project generator | `create-denebola` | tool |
 | Consumer fixture verification | `pnpm verify:consumer` | tool |
 
 ## Deferred (do not depend on)
@@ -298,7 +298,7 @@ Status legend:
 - A compile step that turns `messages.ts` into hashed ICU ids: `i18n:extract` scans `defineMessages` / `<FormattedMessage>` call sites, which the framework's own catalog does not use (validation covers consistency instead).
 - Virtualized Select list for very large option sets (the dropdown uses `ScrollView`).
 - Automatic cache hydration ordering across app restarts on top of `ServerStateProvider` (call `createQueryPersister(...).restore` / pass `queryPersister`); the queue and cache both persist, but reconciliation policy is app-owned.
-- Migration definitions for real generated files: `mobile-template-migrate` ships the engine and the typed `config`/`dependency`/`template` kinds, but the registry is empty until a breaking file change exists.
+- Migration definitions for real generated files: `denebola-migrate` ships the engine and the typed `config`/`dependency`/`template` kinds, but the registry is empty until a breaking file change exists.
 - Push notifications, camera, files, background tasks, location, biometrics as runtime deps.
 - Analytics/crash/feature-flag vendor integrations and any specific backend or auth provider.
 - Remote feature-flag providers; the shipped flags are local overrides only.

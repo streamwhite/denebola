@@ -26,19 +26,56 @@ Native dependency, app config, permission, runtime-version, and native code chan
 
 ## Runtime package releases
 
-Every package under `packages/` is an ordinary npm package: it declares a plain semantic version, real dependency ranges (no `workspace:` protocol) and `publishConfig.access`, so publishing needs nothing but npm:
+Every package under `packages/` is an ordinary npm package: it declares a plain semantic version, real dependency ranges (no `workspace:` protocol) and `publishConfig.access`, so publishing needs nothing but npm. The release flow automates the whole sequence — verify, bump, changelog, publish, tag:
+
+```sh
+pnpm release patch              # verify + bump patch + publish dry-run + commit changelog
+pnpm release minor --publish    # bump minor, really publish both packages, commit
+pnpm release 1.0.0 --publish --tag   # explicit version and a git tag
+```
+
+`scripts/release.mjs`:
+
+- runs `pnpm test:packages`, `pnpm typecheck` and `pnpm publish:dry-run` before changing anything;
+- bumps both `packages/mobile-template` and `packages/create-mobile-app` to the same version and moves the `Unreleased` changelog notes under the new version;
+- publishes each package with `npm publish` — pass `--publish` to upload, otherwise everything stays a `--dry-run`;
+- commits the version bump when publishing (`--no-commit` to skip, `--commit` to force in dry-run) and tags `vX.Y.Z` with `--tag`;
+- refuses a version that is not newer than the current one.
+
+For a manual release the plain commands still work:
 
 ```sh
 cd packages/mobile-template && npm publish
 cd packages/create-mobile-app && npm publish
 ```
 
-- `npm publish --dry-run` prints the tarball and the target registry without uploading; `pnpm publish:dry-run` does it for every package and runs in CI.
+## Registry
+
+Installs and publishes are configured so the project does not depend on a developer's global config:
+
+- `pnpm-workspace.yaml` `registries` and `.npmrc`: installs resolve from `https://registry.npmjs.org/` (`@jsr` → jsr). The private registry does not mirror public packages, so it is not the install default.
+- The packages are unscoped (`denebola`, `create-denebola`), so scope-based routing cannot select the private registry. Publishing targets it with an explicit `--registry`.
+- Auth is never committed. Provide `NODE_AUTH_TOKEN` (CI) or a user-level `~/.npmrc` token.
+
+`pnpm release` publishes to `https://registry.piaosiyuan.cn/js/` by default; override with `NPM_REGISTRY_URL` (for example `NPM_REGISTRY_URL=https://registry.npmjs.org pnpm release minor --publish`). The publish workflow reads the same `NPM_REGISTRY_URL` repository variable, defaulting to the private registry.
+
+- `npm publish --dry-run` prints the tarball and the target registry without uploading; `pnpm publish:dry-run` does it for every package (targeting the private registry) and runs in CI.
 - `pnpm test:packages` must pass before publishing; the runtime package also runs `prepublishOnly: npm run typecheck`.
 - `pnpm pack:packages` prints the tarball contents of every package, so a release can be reviewed without publishing.
 - `pnpm verify:consumer` packs, scaffolds, installs and resolves a clean consumer project; it is also part of CI.
-- No registry is hard-coded. `NPM_CONFIG_REGISTRY` and `NODE_AUTH_TOKEN` select the registry (the publish workflow reads the `NPM_REGISTRY_URL` repository variable and `NPM_TOKEN`), and `MOBILE_TEMPLATE_PACKAGE` renames the package when a fork publishes under another name.
-- The publish workflow (`.github/workflows/release.yml`) runs a plain `npm publish` in the selected package directory.
+- `DENEBOLA_PACKAGE` renames the package when a fork publishes under another name.
+- The publish workflow (`.github/workflows/release.yml`) runs `npm publish` against the selected registry in the selected package directory.
+
+## Try it against a real project
+
+Scaffold a runnable project from the packed packages, exactly as a consumer would install them:
+
+```sh
+pnpm create:test-project my-app          # -> ../my-app, installed, Expo config + typecheck + doctor
+pnpm create:test-project my-app /tmp/apps # choose the parent directory
+```
+
+`scripts/create-test-project.sh` packs `packages/mobile-template`, vendors the tarball inside the project, scaffolds with `create-denebola`, installs from the public registry (override with `NPM_REGISTRY`), then resolves the Expo config, typechecks the generated entry files and prints `denebola-doctor`. Set `INSTALL=0` to scaffold only.
 
 
 ## Versioning

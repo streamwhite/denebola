@@ -32,10 +32,10 @@ bundled into the app, so they must never contain secrets.
 ## Diagnostics and updates
 
 ```sh
-pnpm mobile-template:doctor     # versions, Expo/React Native lines, rebuild needed?
-pnpm mobile-template:migrate --dry-run   # preview framework file migrations
-pnpm mobile-template:migrate             # apply them (backs up changed files)
+pnpm denebola:doctor     # versions, Expo/React Native lines, rebuild needed?
+pnpm denebola:migrate --dry-run   # preview framework file migrations
+pnpm denebola:migrate             # apply them (backs up changed files)
 ```
 
-`mobile-template:migrate` only ever touches files the framework generated and recorded. It
+`denebola:migrate` only ever touches files the framework generated and recorded. It
 refuses to overwrite a file you edited, and writes a `.bak` backup before changing one.

@@ -9,7 +9,7 @@ Authentication stays a business concern. The runtime provides the state containe
 ```tsx
 // src/app/_layout.tsx
 import { Stack } from "expo-router";
-import { AuthProvider, MobileTemplateProvider } from "@your-scope/mobile-template";
+import { AuthProvider, MobileTemplateProvider } from "denebola";
 import { authClient } from "../../features/auth/client";
 
 export default function RootLayout() {
@@ -25,8 +25,8 @@ export default function RootLayout() {
 
 ```tsx
 // src/features/auth/client.ts — inject your backend, the runtime couples to no vendor
-import { createApiClient, createSessionManager, secureStorage } from "@your-scope/mobile-template";
-import type { AuthClient, Session } from "@your-scope/mobile-template";
+import { createApiClient, createSessionManager, secureStorage } from "denebola";
+import type { AuthClient, Session } from "denebola";
 
 const sessions = createSessionManager(secureStorage);
 const api = createApiClient({

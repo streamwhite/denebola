@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// Shared project health probe used by `mobile-template-doctor` and `mobile-template-update`.
+// Shared project health probe used by `denebola-doctor` and `denebola-update`.
 // Resolves installs from the project's own node_modules so a leaked NODE_PATH cannot lie.
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-export const TEMPLATE_PACKAGE = process.env.MOBILE_TEMPLATE_PACKAGE ?? "@your-scope/mobile-template";
+export const TEMPLATE_PACKAGE = process.env.DENEBOLA_PACKAGE ?? "denebola";
 export const REGISTRY = process.env.NPM_CONFIG_REGISTRY ?? "https://registry.npmjs.org";
 const MANIFEST = "package.json";
 const TIMEOUT_MS = 3_000;

@@ -1,11 +1,21 @@
-# Expo Mobile Application Template
+# Denebola
 
 Production-oriented Expo + React Native foundation for iOS and Android.
+
+## Agent skill
+
+This repository ships a coding-agent skill describing the framework — integration points, the full public API inventory and common recipes. Install it with the open agent-skills CLI:
+
+```sh
+npx skills add streamwhite/mobile-dev-template-expo -g
+```
+
+The skill lives in `.agents/skills/framework-development/` (`SKILL.md` plus `references/api.md` and `references/recipes.md`) and is discovered automatically by the CLI.
 
 ## Included
 
 - Expo Router with a generated entry layout, plus a scaffold that emits new projects
-- Publishable runtime package `@your-scope/mobile-template` with a consumer scaffold `@your-scope/create-mobile-app`
+- Publishable runtime package `denebola` with a consumer scaffold `create-denebola`
 - TypeScript strict mode and path aliases
 - TanStack Query provider
 - React Hook Form, Zod and React Intl-ready structure
@@ -31,19 +41,21 @@ Production-oriented Expo + React Native foundation for iOS and Android.
 
 ## Use as a package
 
-The reusable runtime is published as `@your-scope/mobile-template`, and this repository also builds a scaffold in the same shape as `create-react-app`:
+The reusable runtime is published as `denebola`, and this repository also builds a scaffold in the same shape as `create-react-app`:
 
 ```sh
-pnpm create @your-scope/mobile-app my-app
+pnpm create create-denebola my-app
 cd my-app
 pnpm install
 pnpm dev
 ```
 
+The scaffold derives valid native identifiers from the directory name: `My-Cool.App` yields the display name `my-cool-app`, the Android package / iOS bundle id `com.example.mycoolapp` and the URL scheme `mycoolapp`. Override the identifier prefix with `DENEBOLA_APP_ID_PREFIX` (default `com.example`) and the runtime package name with `DENEBOLA_PACKAGE`.
+
 Or add the runtime to an existing Expo project:
 
 ```sh
-pnpm add @your-scope/mobile-template
+pnpm add denebola
 ```
 
 The application then owns only its entry, config and business code:
@@ -52,7 +64,7 @@ The application then owns only its entry, config and business code:
 // src/app/_layout.tsx
 import "../../global.css";
 import { Stack } from "expo-router";
-import { MobileTemplateProvider } from "@your-scope/mobile-template";
+import { MobileTemplateProvider } from "denebola";
 
 export default function RootLayout() {
   return (
@@ -66,12 +78,12 @@ export default function RootLayout() {
 ```ts
 // app.config.ts
 export default {
-  plugins: ["expo-router", "expo-secure-store", "expo-splash-screen", "@your-scope/mobile-template"],
+  plugins: ["expo-router", "expo-secure-store", "expo-splash-screen", "denebola"],
 };
 ```
 
-- Expo, Expo Router, the native modules and the app-facing stack are dependencies of the package, so `pnpm update @your-scope/mobile-template --latest` raises them together; native changes still require a new binary.
-- `pnpm exec mobile-template-doctor` reports the installed version, Expo compatibility and whether a rebuild is required.
+- Expo, Expo Router, the native modules and the app-facing stack are dependencies of the package, so `pnpm update denebola --latest` raises them together; native changes still require a new binary.
+- `pnpm exec denebola-doctor` reports the installed version, Expo compatibility and whether a rebuild is required.
 - The package never overwrites `src/app` or your features.
 
 ### Publishing the package
@@ -84,11 +96,15 @@ npm publish --dry-run   # inspect tarball + target registry
 npm publish             # publish (prepublishOnly typechecks first)
 ```
 
+Dependency and publish routing is committed: installs resolve from `registry.npmjs.org`, and the unscoped packages `denebola` / `create-denebola` are published to the private registry `https://registry.piaosiyuan.cn/js/` with an explicit `--registry` (see `scripts/release.mjs`). No secret is stored in the repo — supply `NODE_AUTH_TOKEN` or a user-level `~/.npmrc` token. Override the release target with `NPM_REGISTRY_URL`. Details: `docs/RELEASE.md`.
+
 Repository-level helpers exist for convenience only — `pnpm pack:packages`, `pnpm publish:dry-run` (both run in CI) and `pnpm verify:consumer` — but none of them is required to publish. Consumers then get the new stack the ordinary way:
 
 ```sh
-pnpm update @your-scope/mobile-template --latest
+pnpm update denebola --latest
 ```
+
+The release flow is automated: `pnpm release patch` verifies, bumps both packages, updates the changelog and runs a publish dry-run; add `--publish` to upload and `--tag` to tag. To see the result in a real project, `pnpm create:test-project my-app` scaffolds, installs and health-checks a consumer app from the packed tarball. Details: `docs/RELEASE.md`.
 
 Full consumer walkthrough with every recipe (data, auth, i18n, deep links, notifications, offline, native adapters, private registries): `examples/consumer/README.md`. Focused notes: `examples/basic`, `examples/auth`, `examples/offline`.
 
@@ -129,7 +145,7 @@ pnpm dev:web
    pnpm dev
    ```
 
-3. Open the development build app and scan the terminal QR code, or open the `exp+expo-mobile-template://...` link shown by Metro.
+3. Open the development build app and scan the terminal QR code, or open the `exp+denebola://...` link shown by Metro.
 
 If the device cannot reach the computer over Wi-Fi, use USB instead (see below) or a tunnel:
 
@@ -222,10 +238,10 @@ Options:
 - `--no-build-cache`: clears the Android native build cache.
 - `--no-bundler`: skips starting Metro, so it reuses the server from terminal 1.
 
-If a build is still stale, force a fresh native build:
+If a build is still stale, regenerate the native projects (this project uses Continuous Native Generation, so `android/` and `ios/` are not committed):
 
 ```sh
-rm -rf android/app/build
+pnpm exec expo prebuild --clean
 pnpm android -- --no-build-cache
 ```
 
@@ -456,8 +472,8 @@ Notes:
 
 Application code lives in `src/`. The distributable product lives in `packages/` and consists of exactly two ordinary npm packages:
 
-- `@your-scope/mobile-template` — the runtime: providers, UI primitives, API/auth/storage/i18n/deep-link/notification abstractions, doctor binary and the Expo config plugin. Expo, Expo Router, the native modules and the app-facing stack are its dependencies.
-- `@your-scope/create-mobile-app` — the scaffold that generates a consumer project (`pnpm create @your-scope/mobile-app my-app`).
+- `denebola` — the runtime: providers, UI primitives, API/auth/storage/i18n/deep-link/notification abstractions, doctor binary and the Expo config plugin. Expo, Expo Router, the native modules and the app-facing stack are its dependencies.
+- `create-denebola` — the scaffold that generates a consumer project (`pnpm create create-denebola my-app`).
 
 One package keeps the release story boring: `cd packages/mobile-template && npm publish`. Anything a capability package would have re-exported is already exported by the runtime package, so there is no second package to version, no `workspace:` protocol to rewrite and no release tooling to run.
 

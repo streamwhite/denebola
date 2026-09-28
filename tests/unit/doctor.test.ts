@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 
-const TEMPLATE_PACKAGE = "@your-scope/mobile-template";
+const TEMPLATE_PACKAGE = "denebola";
 const DOCTOR_BIN = join(process.cwd(), "packages/mobile-template/bin/doctor.mjs");
 // A registry that refuses connections immediately, so the doctor stays offline and deterministic.
 const OFFLINE_REGISTRY = "http://127.0.0.1:9";
@@ -38,7 +38,7 @@ function runDoctor(versions: { expo: string; react: string; reactNative: string 
 
 afterAll(() => rmSync(workDir, { recursive: true, force: true }));
 
-describe("mobile-template-doctor", () => {
+describe("denebola-doctor", () => {
   it("reports the expected and installed React and React Native lines", () => {
     const out = runDoctor({ expo: "57.0.23", react: "19.2.4", reactNative: "0.86.3" });
 

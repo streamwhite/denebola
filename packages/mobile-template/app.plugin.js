@@ -1,10 +1,10 @@
-// Config plugin for @your-scope/mobile-template.
+// Config plugin for denebola.
 // Applies package-level defaults that are safe to share across consumers and, when given
 // options, wires iOS Universal Links, Android App Links, native permission usage descriptions
 // and native build identifiers. Consumers list their own native plugins (expo-router,
 // expo-secure-store, etc.) in app.config.ts; this plugin only adds template-owned configuration.
 //
-//   plugins: [["@your-scope/mobile-template", {
+//   plugins: [["denebola", {
 //     universalLinks: ["example.com"],
 //     appLinks: ["example.com"],
 //     permissions: { camera: "Allow camera access" },

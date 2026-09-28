@@ -1,6 +1,13 @@
 packages:
   - "apps/*"
   - "packages/*"
+# Installs resolve from npm (the private registry does not mirror public packages).
+# The unscoped packages denebola / create-denebola are published to the private
+# registry with an explicit --registry (see scripts/release.mjs and the release workflow).
+# Auth comes from the environment (NODE_AUTH_TOKEN) or a user-level .npmrc, never the repo.
+registries:
+  default: https://registry.npmjs.org/
+  "@jsr": https://npm.jsr.io/
 allowBuilds:
   "@biomejs/biome": true
   dtrace-provider: true

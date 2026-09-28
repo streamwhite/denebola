@@ -7,8 +7,9 @@ import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { isEntryPoint } from "./entry.mjs";
 
-export const STATE_FILE = ".mobile-template-migrations.json";
+export const STATE_FILE = ".denebola-migrations.json";
 export const BACKUP_SUFFIX = ".bak";
 const DEFAULT_MIGRATIONS = new URL("../migrations/index.mjs", import.meta.url);
 
@@ -104,5 +105,5 @@ async function main() {
   console.log(`\nApplied ${ids.length} migration(s). Backups use ${BACKUP_SUFFIX}.`);
 }
 
-const invoked = process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+const invoked = isEntryPoint(import.meta.url);
 if (invoked) main().catch((error) => { console.error(error); process.exitCode = 1; });

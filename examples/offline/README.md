@@ -6,8 +6,8 @@ Offline support has two independent pieces, both exported by the runtime package
 - `migrate(database, migrations)` — ordered schema upgrades for whatever database the application adds.
 
 ```tsx
-import { createSyncQueue, migrate, secureStorage } from "@your-scope/mobile-template";
-import type { Migration } from "@your-scope/mobile-template";
+import { createSyncQueue, migrate, secureStorage } from "denebola";
+import type { Migration } from "denebola";
 
 const queue = createSyncQueue<{ orderId: string }>();
 queue.enqueue({ orderId: "42" });

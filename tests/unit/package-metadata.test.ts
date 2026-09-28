@@ -45,7 +45,8 @@ describe("publishable packages", () => {
     const manifest = readManifest(dir);
 
     expect(manifest.private).not.toBe(true);
-    expect(manifest.name).toMatch(/^@[^/]+\/[^/]+$/);
+    // Valid npm name, scoped (@scope/name) or unscoped (name).
+    expect(manifest.name).toMatch(/^(?:@[^/]+\/)?[a-z0-9][a-z0-9._-]*$/);
     expect(manifest.version).toMatch(/^\d+\.\d+\.\d+/);
     expect(manifest.files?.length ?? 0).toBeGreaterThan(0);
     if (manifest.main) {
@@ -124,3 +125,50 @@ describe("template metadata", () => {
     expect(templateVersion).toMatch(/^\d+\.\d+\.\d+/);
   });
 });
+
+describe("registry configuration", () => {
+  const PRIVATE_REGISTRY = "https://registry.piaosiyuan.cn/js/";
+  const PUBLIC_REGISTRY = "https://registry.npmjs.org/";
+
+  it("resolves installs from npm (pnpm)", () => {
+    const workspace = readFileSync(join(process.cwd(), "pnpm-workspace.yaml"), "utf8");
+
+    expect(workspace).toContain("registries:");
+    expect(workspace).toMatch(/default:\s*https:\/\/registry\.npmjs\.org\//);
+  });
+
+  it("publishes the unscoped packages to the private registry via an explicit registry", () => {
+    const release = readFileSync(join(process.cwd(), "scripts/release.mjs"), "utf8");
+    const workflow = readFileSync(join(process.cwd(), ".github/workflows/release.yml"), "utf8");
+
+    expect(release).toContain(PRIVATE_REGISTRY);
+    expect(workflow).toContain(PRIVATE_REGISTRY);
+  });
+
+  it("keeps npm config secret-free", () => {
+    const npmrc = readFileSync(join(process.cwd(), ".npmrc"), "utf8");
+    const directives = npmrc
+      .split("\n")
+      .filter((line) => !line.trim().startsWith("#"))
+      .join("\n");
+
+    expect(npmrc).toContain(PUBLIC_REGISTRY);
+    // Secrets must come from the environment, never the repository.
+    expect(directives).not.toMatch(/_authToken|password|:\s*npm_/i);
+  });
+});
+
+
+describe("native toolchain versions", () => {
+  // Reanimated and Worklets must move together; Reanimated 4.7 needs Worklets 0.13.x.
+  // Pin both to the Expo SDK's bundled versions so a caret range cannot split the pair.
+  const bundled = JSON.parse(readFileSync(join(process.cwd(), "node_modules/expo/bundledNativeModules.json"), "utf8"));
+  const manifests = [readManifest(join(process.cwd())), readManifest(join(process.cwd(), "packages/create-mobile-app/template"))];
+
+  it.each(["react-native-reanimated", "react-native-worklets"])("pins %s to the bundled Expo SDK version", (name) => {
+    for (const manifest of manifests) {
+      expect(manifest.dependencies?.[name], `${manifest.name} must declare ${name}`).toBe(bundled[name]);
+    }
+  });
+});
+

@@ -466,5 +466,8 @@ Expo 当前的 EAS 工作流本身覆盖 Build、Submit、Update、开发构建�
 [1]: https://docs.expo.dev/build/introduction/?utm_source=chatgpt.com "EAS Build - Expo documentation"
 `,
     ],
+    [
+      `这个项目,还遗留一些项目代码(不是作为Opinionated Expo(react native) based mobile framework需要的部分,之前测试expo留下来),删除他们`,
+    ],
   ],
 };
