@@ -15,6 +15,7 @@ Reference files in this skill:
 
 - `references/api.md` — complete grouped inventory of the public API (contracts and deferred features marked).
 - `references/recipes.md` — copy-paste patterns for the most common tasks.
+- `references/testing.md` — what to test (framework logic) vs. skip (wrappers), and how to run it.
 
 ## Core integration (the only required wiring)
 
@@ -68,6 +69,7 @@ app.config.ts       App identity, permissions and plugins
 7. Native-backed features (NetInfo, localization, notifications, camera, files, SQLite, biometrics, slider) need a development build, not Expo Go. Contracts (battery, clipboard, haptics, orientation, media, etc.) are type-only — the app supplies the implementation.
 8. Run `pnpm typecheck` and `pnpm test`; keep `en`/`zh-CN` messages in sync (`validateTranslations`).
 9. Treat the deferred list in `references/api.md` as unavailable; build it in the app if needed.
+10. For new framework logic, add a test per `references/testing.md`: test the framework's own logic, not wrappers over dependencies/platform APIs. Add a test for any bug you fix.
 
 ## Capability map
 
