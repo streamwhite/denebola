@@ -127,7 +127,6 @@ describe("template metadata", () => {
 });
 
 describe("registry configuration", () => {
-  const PRIVATE_REGISTRY = "https://registry.piaosiyuan.cn/js/";
   const PUBLIC_REGISTRY = "https://registry.npmjs.org/";
 
   it("resolves installs from npm (pnpm)", () => {
@@ -137,12 +136,12 @@ describe("registry configuration", () => {
     expect(workspace).toMatch(/default:\s*https:\/\/registry\.npmjs\.org\//);
   });
 
-  it("publishes the unscoped packages to the private registry via an explicit registry", () => {
+  it("publishes the packages to npm with an explicit registry", () => {
     const release = readFileSync(join(process.cwd(), "scripts/release.mjs"), "utf8");
     const workflow = readFileSync(join(process.cwd(), ".github/workflows/release.yml"), "utf8");
 
-    expect(release).toContain(PRIVATE_REGISTRY);
-    expect(workflow).toContain(PRIVATE_REGISTRY);
+    expect(release).toContain(PUBLIC_REGISTRY);
+    expect(workflow).toContain(PUBLIC_REGISTRY);
   });
 
   it("keeps npm config secret-free", () => {

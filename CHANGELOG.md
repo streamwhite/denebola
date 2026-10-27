@@ -6,6 +6,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
 
 ## [Unreleased]
 
+### Changed
+
+- License changed from MIT to Apache-2.0; `LICENSE` now ships with both packages.
+- Releases target the public npm registry (`https://registry.npmjs.org/`) by default; `NPM_REGISTRY_URL` still overrides the target.
+
 ### Added
 
 - Package update / sync contract: framework and module versions (`frameworkVersion`,

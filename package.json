@@ -2,6 +2,7 @@
   "name": "denebola",
   "version": "0.1.0",
   "private": true,
+  "license": "Apache-2.0",
   "packageManager": "pnpm@12.3.4",
   "engines": {
     "node": ">=24.0.0",
@@ -36,7 +37,7 @@
     "update:production": "eas update --channel production --message",
     "test:packages": "vitest run tests/unit",
     "pack:packages": "pnpm -r --filter \"./packages/**\" exec npm pack --dry-run",
-    "publish:dry-run": "pnpm -r --filter \"./packages/**\" exec npm publish --dry-run --registry https://registry.piaosiyuan.cn/js/",
+    "publish:dry-run": "pnpm -r --filter \"./packages/**\" exec npm publish --dry-run --registry https://registry.npmjs.org/",
     "verify:consumer": "bash scripts/verify-consumer-fixture.sh",
     "release": "node scripts/release.mjs",
     "release:dry-run": "node scripts/release.mjs patch",

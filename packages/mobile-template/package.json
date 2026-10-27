@@ -2,7 +2,7 @@
   "name": "denebola",
   "version": "0.1.0",
   "description": "Production-oriented Expo + React Native foundation as an installable runtime package.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "main": "src/index.tsx",
   "types": "src/index.tsx",
   "react-native": "src/index.tsx",

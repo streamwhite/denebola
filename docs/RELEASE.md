@@ -51,15 +51,14 @@ cd packages/create-mobile-app && npm publish
 
 ## Registry
 
-Installs and publishes are configured so the project does not depend on a developer's global config:
+Installs and publishes resolve from the public npm registry by default, so the project does not depend on a developer's global config:
 
-- `pnpm-workspace.yaml` `registries` and `.npmrc`: installs resolve from `https://registry.npmjs.org/` (`@jsr` → jsr). The private registry does not mirror public packages, so it is not the install default.
-- The packages are unscoped (`denebola`, `create-denebola`), so scope-based routing cannot select the private registry. Publishing targets it with an explicit `--registry`.
+- `pnpm-workspace.yaml` `registries` and `.npmrc`: installs resolve from `https://registry.npmjs.org/` (`@jsr` → jsr).
+- `pnpm release` and `.github/workflows/release.yml` publish to `https://registry.npmjs.org/` with an explicit `--registry`.
+- Override the publish target with `NPM_REGISTRY_URL` (for example a private mirror: `NPM_REGISTRY_URL=https://npm.example.com pnpm release minor --publish`). The publish workflow reads the same `NPM_REGISTRY_URL` repository variable.
 - Auth is never committed. Provide `NODE_AUTH_TOKEN` (CI) or a user-level `~/.npmrc` token.
 
-`pnpm release` publishes to `https://registry.piaosiyuan.cn/js/` by default; override with `NPM_REGISTRY_URL` (for example `NPM_REGISTRY_URL=https://registry.npmjs.org pnpm release minor --publish`). The publish workflow reads the same `NPM_REGISTRY_URL` repository variable, defaulting to the private registry.
-
-- `npm publish --dry-run` prints the tarball and the target registry without uploading; `pnpm publish:dry-run` does it for every package (targeting the private registry) and runs in CI.
+- `npm publish --dry-run` prints the tarball and the target registry without uploading; `pnpm publish:dry-run` does it for every package and runs in CI.
 - `pnpm test:packages` must pass before publishing; the runtime package also runs `prepublishOnly: npm run typecheck`.
 - `pnpm pack:packages` prints the tarball contents of every package, so a release can be reviewed without publishing.
 - `pnpm verify:consumer` packs, scaffolds, installs and resolves a clean consumer project; it is also part of CI.

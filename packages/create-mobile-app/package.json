@@ -2,7 +2,7 @@
   "name": "create-denebola",
   "version": "0.1.0",
   "description": "Create an Expo app built on denebola, like create-react-app.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bin": {
     "create-mobile-app": "bin/create.js"
   },

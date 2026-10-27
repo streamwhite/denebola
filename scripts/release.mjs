@@ -20,8 +20,8 @@ const REPO_ROOT = fileURLToPath(new URL("..", import.meta.url));
 const PACKAGES = ["packages/mobile-template", "packages/create-mobile-app"];
 const CHANGELOG = "CHANGELOG.md";
 const BUMP_TYPES = ["patch", "minor", "major"];
-// Project packages publish to the private registry; override with NPM_REGISTRY_URL (e.g. for npm).
-const REGISTRY = process.env.NPM_REGISTRY_URL ?? "https://registry.piaosiyuan.cn/js/";
+// Packages publish to the public npm registry; override with NPM_REGISTRY_URL (e.g. a private mirror).
+const REGISTRY = process.env.NPM_REGISTRY_URL ?? "https://registry.npmjs.org/";
 
 const argv = process.argv.slice(2);
 const bump = argv.find((arg) => !arg.startsWith("--"));

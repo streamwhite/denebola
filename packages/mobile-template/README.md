@@ -2,6 +2,8 @@
 
 Production-oriented Expo + React Native foundation shipped as an installable runtime package.
 
+> **Status: active development (pre-1.0).** The public API may change between `0.x` releases until `1.0.0`. Pin an exact version in production and check the changelog before upgrading.
+
 ## Install
 
 ```sh
@@ -391,3 +393,7 @@ Because Expo and the native modules are dependencies of this package, a version 
 Owned by this package: runtime code, providers, UI primitives, API/auth/storage/i18n/deep-link/notification abstractions and the config plugin.
 
 Owned by the application: `src/app` routes, `src/features`, business schemas and endpoints, backend integration, branding, identifiers and permissions. The package never overwrites consumer files.
+
+## License
+
+[Apache-2.0](LICENSE)
